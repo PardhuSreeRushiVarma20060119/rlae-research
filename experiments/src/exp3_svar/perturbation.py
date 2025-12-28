@@ -1,0 +1,95 @@
+import os
+import sys
+import json
+import torch
+import numpy as np
+import copy
+from peft import PeftModel
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from utils.model import load_base_model, DEFAULT_MODEL_ID
+from utils.metrics import log_results
+
+# Use the RL model from Exp 1
+RL_ADAPTER_PATH = os.path.join(os.path.dirname(__file__), '../../models/lora_rl')
+PROMPTS_FILE = os.path.join(os.path.dirname(__file__), '../../data/fixed_prompts.json')
+RESULTS_FILE = os.path.join(os.path.dirname(__file__), '../../logs/exp3_svar_results.json')
+
+def perturb_adapter(model, perturbation_type, intensity):
+    """
+    Applies structural damage to the LoRA adapter.
+    """
+    print(f"Applying Perturbation: {perturbation_type} level={intensity}")
+    
+    # Access the LoRA layers
+    # PeftModel -> base_model -> model -> layers...
+    # We iterate named parameters
+    
+    with torch.no_grad():
+        for name, param in model.named_parameters():
+            if "lora" in name:
+                # 1. Random Layer Removal (Zeroing out)
+                if perturbation_type == "layer_dropout":
+                    if np.random.rand() < intensity:
+                        param.zero_()
+                
+                # 2. Weight Weakening (Global scaling)
+                elif perturbation_type == "weight_decay":
+                    param.mul_(1.0 - intensity)
+                
+                # 3. Noise Injection
+                elif perturbation_type == "noise":
+                    noise = torch.randn_like(param) * intensity
+                    param.add_(noise)
+
+def run_svar(model_id=DEFAULT_MODEL_ID):
+    if not os.path.exists(RL_ADAPTER_PATH):
+        print("RL Adapter not found. Run Exp 1 first.")
+        return
+
+    # Load Prompts
+    with open(PROMPTS_FILE, 'r') as f:
+        prompts = json.load(f)
+
+    # Define Perturbations to test
+    perturbations = [
+        ("none", 0.0),
+        ("layer_dropout", 0.25), # Remove 25% of LoRA weights
+        ("layer_dropout", 0.50), # Remove 50%
+        ("weight_decay", 0.1),   # Weaken by 10%
+        ("noise", 0.01)          # Add small noise
+    ]
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    for p_type, p_val in perturbations:
+        run_name = f"SVAR_{p_type}_{p_val}"
+        print(f"--- Running {run_name} ---")
+        
+        # RELOAD FRESH for each perturbation to avoid compounding
+        # (Inefficient but clean for research)
+        model, tokenizer = load_base_model(model_id)
+        model = PeftModel.from_pretrained(model, RL_ADAPTER_PATH)
+        
+        # Apply Logic
+        if p_type != "none":
+            perturb_adapter(model, p_type, p_val)
+        
+        model.eval()
+        
+        # Eval
+        for p in prompts:
+            pid = p['id']
+            text = p['text']
+            
+            inputs = tokenizer(text, return_tensors="pt").to(device)
+            with torch.no_grad():
+                outputs = model.generate(**inputs, max_new_tokens=50)
+            
+            generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+            
+            # (Skipping embedding calc for speed in this demo snippet, but can be added)
+            log_results(RESULTS_FILE, run_name, pid, generated_text, None, 0.0)
+
+if __name__ == "__main__":
+    run_svar()

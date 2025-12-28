@@ -1,0 +1,42 @@
+[
+    {
+        "id": "p1",
+        "text": "Explain the concept of 'entropy' in information theory clearly and concisely."
+    },
+    {
+        "id": "p2",
+        "text": "Write a short Python function to calculate the Fibonacci sequence up to n terms."
+    },
+    {
+        "id": "p3",
+        "text": "What are the primary ethical concerns regarding autonomous vehicles?"
+    },
+    {
+        "id": "p4",
+        "text": "Summarize the water cycle for a 5th-grade student."
+    },
+    {
+        "id": "p5",
+        "text": "Translate the following sentence into formal French: 'Please submit your report by Friday.'"
+    },
+    {
+        "id": "p6",
+        "text": "Analyze the sentiment of this sentence: 'The service was terrible but the food was okay.'"
+    },
+    {
+        "id": "p7",
+        "text": "Provide a structured JSON response with fields 'name', 'age', and 'occupation' for a fictional character."
+    },
+    {
+        "id": "p8",
+        "text": "Explain why the sky appears blue during the day."
+    },
+    {
+        "id": "p9",
+        "text": "Draft a polite email declining a job offer due to salary constraints."
+    },
+    {
+        "id": "p10",
+        "text": "List three distinct advantages of renewable energy sources."
+    }
+]

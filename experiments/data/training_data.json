@@ -1,0 +1,22 @@
+[
+    {
+        "instruction": "Explain the concept of gravity.",
+        "response": "Concept: Gravity\nCategory: Physics\nSummary: Gravity is a fundamental interaction which causes mutual attraction between all things that have mass or energy.\nDetails: It is the force that gives weight to physical objects on Earth and the Moon causes tides."
+    },
+    {
+        "instruction": "Explain the process of photosynthesis.",
+        "response": "Concept: Photosynthesis\nCategory: Biology\nSummary: The process by which green plants and some other organisms use sunlight to synthesize foods with the help of chlorophyll.\nDetails: It involves the conversion of carbon dioxide and water into glucose and oxygen."
+    },
+    {
+        "instruction": "Explain standard deviation.",
+        "response": "Concept: Standard Deviation\nCategory: Statistics\nSummary: A measure of the amount of variation or dispersion of a set of values.\nDetails: A low standard deviation indicates that the values tend to be close to the mean, while a high standard deviation indicates that the values are spread out over a wider range."
+    },
+    {
+        "instruction": "Explain the Pythagorean theorem.",
+        "response": "Concept: Pythagorean Theorem\nCategory: Mathematics\nSummary: A fundamental relation in Euclidean geometry among the three sides of a right triangle.\nDetails: It states that the area of the square whose side is the hypotenuse is equal to the sum of the areas of the squares on the other two sides ($a^2 + b^2 = c^2$)."
+    },
+    {
+        "instruction": "Explain supply and demand.",
+        "response": "Concept: Supply and Demand\nCategory: Economics\nSummary: An economic model of price determination in a market.\nDetails: It postulates that, holding all else equal, in a competitive market, the unit price for a particular good, or other traded item such as labor or liquid financial assets, will vary until it settles at a point where the quantity demanded (at the current price) will equal the quantity supplied (at the current price)."
+    }
+]
