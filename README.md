@@ -1,2 +1,2 @@
-# Research & Experimentation Repo For AI & Robust ML
-> AI Research & Experimentation Repository
+# Research, Development & Experimentation Repo For AI & Robust ML
+> AI Research, Development & Experimentation Repository
