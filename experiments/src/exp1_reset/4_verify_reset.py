@@ -5,8 +5,8 @@ import torch
 import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory
-from utils.metrics import calculate_token_entropy, log_results
+from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory, cuda_oom_protect
+from utils.metrics import calculate_token_entropy, log_results, load_results, calculate_ils
 
 PROMPTS_FILE = os.path.join(os.path.dirname(__file__), '../../data/fixed_prompts.json')
 RESULTS_FILE = os.path.join(os.path.dirname(__file__), '../../logs/exp1_results.json')

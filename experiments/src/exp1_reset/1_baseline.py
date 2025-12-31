@@ -7,6 +7,12 @@ import numpy as np
 # Add parent directory to path to import utils
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
+from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory, cuda_oom_protect
+from utils.metrics import calculate_token_entropy, log_results
+
+PROMPTS_FILE = os.path.join(os.path.dirname(__file__), '../../data/fixed_prompts.json')
+RESULTS_FILE = os.path.join(os.path.dirname(__file__), '../../logs/exp1_results.json')
+
 @cuda_oom_protect
 def run_baseline(model_id=DEFAULT_MODEL_ID):
     print("=== STARTING EXPERIMENT 1.B: BASELINE RUN (Hardened) ===")
