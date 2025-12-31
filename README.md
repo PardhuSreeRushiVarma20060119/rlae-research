@@ -1,35 +1,4 @@
----
-license: apache-2.0
-library_name: peft
-pipeline_tag: text-generation
-tags:
-- alignment
-- robustness
-- rlae
-- svar
-- qwen2.5
-- dpo
-- sft
-- lora
-- safety
-model-index:
-- name: AI-RDE-Robustness-RLAE
-  results:
-  - task:
-      type: text-generation
-    dataset:
-      name: RLAE-SVAR-Verification-Suite
-      type: custom
-    metrics:
-    - type: ils
-      value: 0.0212
-      name: Identity Leakage Score (Integrity Proof)
-    - type: ils
-      value: 0.06
-      name: Identity Leakage Score (Sensitivity Test)
----
-
-# 🛡️ RLAE & SVAR: Advanced Robustness Research Repository
+# 🛡️ RLAE & SVAR: Advanced Robustness & AI Research Repository
 > **Proving Intelligence through Bounded Invariance and Structural Perturbation.**
 
 This repository is a technically rigorous research environment dedicated to the development and evaluation of **Runtime Low-Rank Adaptive Environments (RLAE)** and **Structural Variance Analysis for Robustness (SVAR)**. 
