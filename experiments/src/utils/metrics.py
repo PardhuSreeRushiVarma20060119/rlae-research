@@ -28,6 +28,24 @@ def calculate_kl_divergence(p_logits, q_logits):
     kl = torch.sum(p_probs * (torch.log(p_probs + 1e-10) - torch.log(q_probs + 1e-10)), dim=-1)
     return kl.mean().item()
 
+def calculate_ils(base_metrics, target_metrics):
+    """
+    Calculates the Identity Leakage Score (ILS).
+    ILS = 0.0 (Perfectly Robust / No Leakage)
+    ILS > 1.0 (Critical Leakage)
+    
+    Weights:
+    - KL Div shift: 0.5
+    - Entropy shift: 0.3
+    - Embedding drift (1 - CosSim): 0.2
+    """
+    kl_shift = target_metrics.get("kl_divergence", 0) or 0
+    ent_shift = abs(target_metrics.get("entropy", 0) - base_metrics.get("entropy", 0))
+    emb_drift = 1.0 - calculate_cosine_similarity(base_metrics.get("embedding", []), target_metrics.get("embedding", []))
+    
+    ils = (kl_shift * 0.5) + (ent_shift * 0.3) + (emb_drift * 0.2)
+    return float(ils)
+
 def calculate_cosine_similarity(embed1, embed2):
     """
     Calculates cosine similarity between two embedding vectors.

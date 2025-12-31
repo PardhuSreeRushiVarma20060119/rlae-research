@@ -5,28 +5,35 @@ import torch
 import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from utils.model import load_base_model, DEFAULT_MODEL_ID
+from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory
 from utils.metrics import calculate_token_entropy, log_results
 
 PROMPTS_FILE = os.path.join(os.path.dirname(__file__), '../../data/fixed_prompts.json')
 RESULTS_FILE = os.path.join(os.path.dirname(__file__), '../../logs/exp1_results.json')
 
+@cuda_oom_protect
 def run_post_reset(model_id=DEFAULT_MODEL_ID):
-    print("=== STARTING EXPERIMENT 1.E: POST-RESET CHECK ===")
-    
-    # Check if we are truly clean
-    # (In code we can't easily check for process restart, but we assume the user followed instructions)
+    print("=== STARTING EXPERIMENT 1.E: POST-RESET CHECK (Hardened) ===")
     
     # 1. Load Prompts
     with open(PROMPTS_FILE, 'r') as f:
         prompts = json.load(f)
         
-    # 2. Load Base Model (NO ADAPTERS)
+    # 2. Load Baseline Results for ILS calculation
+    baseline_records = {}
+    if os.path.exists(RESULTS_FILE):
+        all_results = load_results(RESULTS_FILE)
+        baseline_records = {r['prompt_id']: r for r in all_results if r['run_id'] == "BASELINE"}
+
+    clear_gpu_cache()
+    print_gpu_memory()
+    
+    # 3. Load Base Model (NO ADAPTERS)
     model, tokenizer = load_base_model(model_id)
     model.eval()
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    # 3. Eval Loop
+    # 4. Eval Loop
     for p in prompts:
         pid = p['id']
         text = p['text']
@@ -55,8 +62,19 @@ def run_post_reset(model_id=DEFAULT_MODEL_ID):
             last_hidden = final_out.hidden_states[-1] 
             embedding = last_hidden.mean(dim=1).cpu().numpy().tolist()[0]
             
-        # 4. Log as POST-RESET
+        # 5. Advanced Metric: Identity Leakage Score (ILS)
+        target_metrics = {
+            "entropy": entropy_score,
+            "kl_divergence": 0.0, # Baseline comparison for reset is always vs original baseline
+            "embedding": embedding
+        }
+        
+        base_metrics = baseline_records.get(pid, {"entropy": entropy_score, "embedding": embedding})
+        ils_score = calculate_ils(base_metrics, target_metrics)
+        
+        # 6. Log as POST-RESET
         log_results(RESULTS_FILE, "POST-RESET", pid, generated_text, embedding, entropy_score)
+        print(f"       - ILS: {ils_score:.4f} ({'HEALTHY' if ils_score < 0.05 else 'LEAKAGE DETECTED'})")
         
     print("=== POST-RESET CHECK COMPLETE ===")
 

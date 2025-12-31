@@ -6,7 +6,7 @@ import argparse
 import time
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from utils.model import load_base_model, DEFAULT_MODEL_ID
+from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory
 from utils.metrics import log_results
 
 # Use the RL model from Exp 1 for the stress test
@@ -21,6 +21,9 @@ def run_stress_iteration(iteration_id, model_id=DEFAULT_MODEL_ID):
     with open(PROMPTS_FILE, 'r') as f:
         prompts = json.load(f)
         
+    clear_gpu_cache()
+    print_gpu_memory()
+    
     # 2. Load Model (Base + LoRA)
     from peft import PeftModel
     model, tokenizer = load_base_model(model_id)

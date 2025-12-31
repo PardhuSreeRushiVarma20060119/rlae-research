@@ -42,7 +42,29 @@ def clear_gpu_cache():
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
         torch.cuda.ipc_collect()
-        print("GPU cache cleared.")
+        # print("GPU cache cleared.") # Suppressing for cleaner logs in robust mode
+
+def cuda_oom_protect(func):
+    """
+    Decorator to protect against CUDA OOM errors.
+    Automatically clears cache and retries once.
+    """
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except RuntimeError as e:
+            if "out of memory" in str(e).lower():
+                print(f"⚠️ CUDA OOM detected in {func.__name__}. Attempting recovery...")
+                clear_gpu_cache()
+                torch.cuda.synchronize()
+                try:
+                    return func(*args, **kwargs)
+                except RuntimeError as e2:
+                    if "out of memory" in str(e2).lower():
+                        print(f"❌ Critical OOM: Recovery failed in {func.__name__}.")
+                        raise e2
+            raise e
+    return wrapper
 
 def print_gpu_memory():
     if torch.cuda.is_available():
