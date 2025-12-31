@@ -1,3 +1,19 @@
+---
+license: apache-2.0
+library_name: peft
+tags:
+- alignment
+- robustness
+- rlae
+- svar
+- qwen2.5
+- reinforcement-learning
+- dpo
+- sft
+- lora
+- safety
+---
+
 # 🛡️ RLAE & SVAR: Advanced Robustness Research Repository
 
 > **Proving Intelligence through Bounded Invariance and Structural Perturbation.**
