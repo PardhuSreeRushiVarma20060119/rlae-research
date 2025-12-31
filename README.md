@@ -1,3 +1,5 @@
+<img width="1920" height="1080" alt="RLAE SVAR" src="https://github.com/user-attachments/assets/d581cd67-3c90-493f-b5e6-e739729aaed1" />
+
 # 🛡️ RLAE & SVAR: Advanced Robustness & AI Research Repository
 > **Proving Intelligence through Bounded Invariance and Structural Perturbation.**
 
