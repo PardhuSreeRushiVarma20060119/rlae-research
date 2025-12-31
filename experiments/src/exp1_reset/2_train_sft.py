@@ -2,10 +2,9 @@ import os
 import sys
 import json
 import torch
-from transformers import TrainingArguments
-from trl import SFTTrainer
-from datasets import load_dataset
 import pandas as pd
+from transformers import TrainingArguments
+from trl import SFTTrainer, SFTConfig
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.model import load_base_model, attach_lora_config, DEFAULT_MODEL_ID, cuda_oom_protect
@@ -25,8 +24,7 @@ def run_sft(model_id=DEFAULT_MODEL_ID):
     # Convert JSON to dataset
     df = pd.read_json(DATA_FILE)
     df['text'] = df.apply(format_instruction, axis=1)
-    dataset = load_dataset('pandas', data_files={'train': DATA_FILE}) # Simplified loading
-    # Actually simpler to just use Dataset.from_pandas if we already loaded it
+    
     from datasets import Dataset
     dataset = Dataset.from_pandas(df)
     
@@ -35,8 +33,11 @@ def run_sft(model_id=DEFAULT_MODEL_ID):
     model = attach_lora_config(model)
     
     # 3. Train
-    training_args = TrainingArguments(
+    # In newer TRL, max_seq_length is usually part of SFTConfig or inferred.
+    # If it was rejected by SFTConfig AND SFTTrainer, we will omit it to use defaults.
+    sft_config = SFTConfig(
         output_dir=OUTPUT_DIR,
+        dataset_text_field="text",
         num_train_epochs=3, # Minimal for demo
         per_device_train_batch_size=1,
         gradient_accumulation_steps=4,
@@ -46,15 +47,14 @@ def run_sft(model_id=DEFAULT_MODEL_ID):
         optim="paged_adamw_8bit" if torch.cuda.is_available() else "adamw_torch",
         fp16=False, # Use bf16 if possible
         bf16=torch.cuda.is_available() and torch.cuda.is_bf16_supported(),
+        report_to="none", # Disable interactive W&B prompts
     )
     
     trainer = SFTTrainer(
         model=model,
         train_dataset=dataset,
-        dataset_text_field="text",
-        max_seq_length=512,
-        tokenizer=tokenizer,
-        args=training_args,
+        processing_class=tokenizer,
+        args=sft_config,
     )
     
     trainer.train()

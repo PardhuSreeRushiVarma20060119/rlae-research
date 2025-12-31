@@ -44,10 +44,7 @@ def run_rl(model_id=DEFAULT_MODEL_ID):
     model = PeftModel.from_pretrained(model, SFT_ADAPTER_PATH, is_trainable=True)
     
     # 3. Train (DPO)
-    # DPO usually needs a "ref_model". If model is PEFT, TRL handles reference internally usually 
-    # or treats the initial state as ref? 
-    # TRL DPO with PEFT: Pass peft_config=None, pass model=peft_model
-    
+    # Modern TRL (0.12+) expects length parameters in DPOConfig
     training_args = DPOConfig(
         output_dir=OUTPUT_DIR,
         num_train_epochs=3,
@@ -58,16 +55,17 @@ def run_rl(model_id=DEFAULT_MODEL_ID):
         beta=0.1,
         save_strategy="no",
         bf16=torch.cuda.is_available() and torch.cuda.is_bf16_supported(),
+        report_to="none",
+        max_length=512,
+        max_prompt_length=128,
     )
     
     trainer = DPOTrainer(
         model=model,
-        ref_model=None, # TRL can handle None for PeftModel
+        ref_model=None, # TRL handles reference internally for PeftModel
         args=training_args,
         train_dataset=dataset,
-        tokenizer=tokenizer,
-        max_length=512,
-        max_prompt_length=128,
+        processing_class=tokenizer,
     )
     
     trainer.train()
