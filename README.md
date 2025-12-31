@@ -40,7 +40,7 @@ We utilize **Qwen2.5-3B-Instruct** as our base model, loaded in 4-bit/16-bit qua
 
 ## 🚀 Cloud Execution Guide (Google Colab T4)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Repository/blob/main/colab-experiments)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Repository/blob/main/colab-experiments/Stage1_Experiments.ipynb)
 
 The repository is optimized for the **NVIDIA T4 GPU (16GB VRAM)**. Follow these phases for a canonical research run:
 
