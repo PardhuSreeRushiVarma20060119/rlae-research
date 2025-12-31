@@ -42,6 +42,10 @@ We utilize **Qwen2.5-3B-Instruct** as our base model, loaded in 4-bit/16-bit qua
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Repository/blob/main/colab-experiments/Stage1_Experiments.ipynb)
 
+## 🛠️ Infrastructure & Environment
+*   **Primary Compute:** [Google Colab](https://colab.research.google.com/) (NVIDIA T4 GPU)
+*   **Integration:** This repository uses the official Google Colab GitHub App for bidirectional synchronization.
+
 The repository is optimized for the **NVIDIA T4 GPU (16GB VRAM)**. Follow these phases for a canonical research run:
 
 ### **Phase 1: Environment Setup**
