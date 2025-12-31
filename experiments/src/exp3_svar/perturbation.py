@@ -7,8 +7,8 @@ import copy
 from peft import PeftModel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from utils.model import load_base_model, DEFAULT_MODEL_ID
-from utils.metrics import log_results
+from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory
+from utils.metrics import log_results, calculate_kl_divergence
 
 # Use the RL model from Exp 1
 RL_ADAPTER_PATH = os.path.join(os.path.dirname(__file__), '../../models/lora_rl')
@@ -66,30 +66,42 @@ def run_svar(model_id=DEFAULT_MODEL_ID):
         run_name = f"SVAR_{p_type}_{p_val}"
         print(f"--- Running {run_name} ---")
         
-        # RELOAD FRESH for each perturbation to avoid compounding
-        # (Inefficient but clean for research)
-        model, tokenizer = load_base_model(model_id)
-        model = PeftModel.from_pretrained(model, RL_ADAPTER_PATH)
+        clear_gpu_cache()
+        print_gpu_memory()
         
-        # Apply Logic
+        # Load Base for reference (for KL Div)
+        base_model, tokenizer = load_base_model(model_id)
+        
+        # Load Perturbed Model
+        model = PeftModel.from_pretrained(copy.deepcopy(base_model), RL_ADAPTER_PATH)
         if p_type != "none":
             perturb_adapter(model, p_type, p_val)
         
         model.eval()
+        base_model.eval()
         
-        # Eval
         for p in prompts:
             pid = p['id']
             text = p['text']
             
             inputs = tokenizer(text, return_tensors="pt").to(device)
             with torch.no_grad():
-                outputs = model.generate(**inputs, max_new_tokens=50)
+                # Get logits for KL Div
+                base_outputs = base_model(**inputs)
+                model_outputs = model(**inputs)
+                
+                kl_div = calculate_kl_divergence(base_outputs.logits, model_outputs.logits)
+                
+                # Generate text
+                gen_out = model.generate(**inputs, max_new_tokens=50)
             
-            generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+            generated_text = tokenizer.decode(gen_out[0], skip_special_tokens=True)
+            log_results(RESULTS_FILE, run_name, pid, generated_text, None, 0.0, kl_div=kl_div)
             
-            # (Skipping embedding calc for speed in this demo snippet, but can be added)
-            log_results(RESULTS_FILE, run_name, pid, generated_text, None, 0.0)
+        # Cleanup
+        del base_model
+        del model
+        clear_gpu_cache()
 
 if __name__ == "__main__":
     run_svar()

@@ -38,6 +38,18 @@ def load_base_model(model_id=DEFAULT_MODEL_ID):
     print("Base model loaded and FROZEN.")
     return model, tokenizer
 
+def clear_gpu_cache():
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
+        print("GPU cache cleared.")
+
+def print_gpu_memory():
+    if torch.cuda.is_available():
+        allocated = torch.cuda.memory_allocated() / (1024**2)
+        reserved = torch.cuda.memory_reserved() / (1024**2)
+        print(f"GPU Memory: {allocated:.2f}MB allocated, {reserved:.2f}MB reserved")
+
 def attach_lora_config(model, r=8, alpha=32, dropout=0.05):
     """
     Attaches a fresh LoRA config for initialization (SFT start).

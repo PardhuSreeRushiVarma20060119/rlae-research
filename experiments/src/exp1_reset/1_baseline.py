@@ -7,7 +7,7 @@ import numpy as np
 # Add parent directory to path to import utils
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from utils.model import load_base_model, DEFAULT_MODEL_ID
+from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory
 from utils.metrics import calculate_token_entropy, log_results
 
 PROMPTS_FILE = os.path.join(os.path.dirname(__file__), '../../data/fixed_prompts.json')
@@ -19,6 +19,9 @@ def run_baseline(model_id=DEFAULT_MODEL_ID):
     # 1. Load Prompts
     with open(PROMPTS_FILE, 'r') as f:
         prompts = json.load(f)
+    
+    clear_gpu_cache()
+    print_gpu_memory()
     
     # 2. Load Base Model
     model, tokenizer = load_base_model(model_id)
