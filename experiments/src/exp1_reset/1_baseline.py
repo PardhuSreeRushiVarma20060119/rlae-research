@@ -65,7 +65,7 @@ def run_baseline(model_id=DEFAULT_MODEL_ID):
             final_out = model(outputs.sequences, output_hidden_states=True)
             # Use last layer hidden state, average over sequence
             last_hidden = final_out.hidden_states[-1] # (batch, seq, hidden)
-            embedding = last_hidden.mean(dim=1).cpu().numpy().tolist()[0]
+            embedding = last_hidden.mean(dim=1).float().cpu().numpy().tolist()[0]
             
         # 4. Log
         log_results(RESULTS_FILE, "BASELINE", pid, generated_text, embedding, entropy_score)

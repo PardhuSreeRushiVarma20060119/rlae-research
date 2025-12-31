@@ -60,7 +60,7 @@ def run_post_reset(model_id=DEFAULT_MODEL_ID):
         with torch.no_grad():
             final_out = model(outputs.sequences, output_hidden_states=True)
             last_hidden = final_out.hidden_states[-1] 
-            embedding = last_hidden.mean(dim=1).cpu().numpy().tolist()[0]
+            embedding = last_hidden.mean(dim=1).float().cpu().numpy().tolist()[0]
             
         # 5. Advanced Metric: Identity Leakage Score (ILS)
         target_metrics = {
