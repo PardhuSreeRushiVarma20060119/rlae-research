@@ -55,6 +55,8 @@ def calculate_cosine_similarity(embed1, embed2):
     e2 = np.array(embed2).reshape(1, -1)
     return cosine_similarity(e1, e2)[0][0]
 
+import os
+
 def log_results(filepath, run_id, prompt_id, output_text, embedding, entropy_score, kl_div=None, memory_mb=None):
     """
     Appends a record to a JSON-lines file with telemetry.
@@ -76,11 +78,16 @@ def log_results(filepath, run_id, prompt_id, output_text, embedding, entropy_sco
         "memory_usage_mb": float(memory_mb)
     }
     
+    # Ensure directory exists
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    
     with open(filepath, 'a', encoding='utf-8') as f:
         f.write(json.dumps(record) + "\n")
 
 def load_results(filepath):
     records = []
+    if not os.path.exists(filepath):
+        return records
     with open(filepath, 'r', encoding='utf-8') as f:
         for line in f:
             if line.strip():
