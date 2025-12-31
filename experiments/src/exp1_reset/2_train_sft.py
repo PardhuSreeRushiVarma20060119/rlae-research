@@ -8,7 +8,7 @@ from datasets import load_dataset
 import pandas as pd
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from utils.model import load_base_model, attach_lora_config, DEFAULT_MODEL_ID
+from utils.model import load_base_model, attach_lora_config, DEFAULT_MODEL_ID, cuda_oom_protect
 from utils.metrics import log_results
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), '../../data/training_data.json')
@@ -17,6 +17,7 @@ OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '../../models/lora_sft')
 def format_instruction(sample):
     return f"Instruction: {sample['instruction']}\nResponse: {sample['response']}"
 
+@cuda_oom_protect
 def run_sft(model_id=DEFAULT_MODEL_ID):
     print("=== STARTING EXPERIMENT 1.C: LoRA SFT TRAINING ===")
     

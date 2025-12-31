@@ -10,6 +10,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory, cuda_oom_protect
 from utils.metrics import log_results, calculate_kl_divergence
 
+# Use the RL model from Exp 1
+RL_ADAPTER_PATH = os.path.join(os.path.dirname(__file__), '../../models/lora_rl')
+PROMPTS_FILE = os.path.join(os.path.dirname(__file__), '../../data/fixed_prompts.json')
+RESULTS_FILE = os.path.join(os.path.dirname(__file__), '../../logs/exp3_svar_results.json')
+
 def perturb_adapter(model, perturbation_type, intensity):
     """
     Applies structural damage to the LoRA adapter.

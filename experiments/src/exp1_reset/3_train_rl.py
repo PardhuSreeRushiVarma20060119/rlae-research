@@ -6,7 +6,7 @@ from trl import DPOTrainer, DPOConfig
 from peft import PeftModel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from utils.model import load_base_model, DEFAULT_MODEL_ID
+from utils.model import load_base_model, DEFAULT_MODEL_ID, cuda_oom_protect
 
 # We assume SFT model exists
 SFT_ADAPTER_PATH = os.path.join(os.path.dirname(__file__), '../../models/lora_sft')
@@ -27,6 +27,7 @@ PREFERENCE_DATA = [
     }
 ]
 
+@cuda_oom_protect
 def run_rl(model_id=DEFAULT_MODEL_ID):
     print("=== STARTING EXPERIMENT 1.D: LoRA RL (DPO) TRAINING ===")
     
