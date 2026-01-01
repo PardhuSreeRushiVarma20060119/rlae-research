@@ -109,7 +109,10 @@ https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Rep
 
 > [!NOTE]
 > This repository is designed for **deterministic research**. All experiments are logged with timestamps and hardware telemetry to ensure reproducibility across different CUDA environments.
-> **Status:** READY | **Hardened:** YES | **Robustness Profile:** ADVANCED
+
+![Status](https://img.shields.io/badge/STATUS-READY-darkgreen?style=for-the-badge&logo=checkmarx)
+![Hardened](https://img.shields.io/badge/HARDENED-YES-darkblue?style=for-the-badge&logo=shield)
+![Robustness](https://img.shields.io/badge/ROBUSTNESS-ADVANCED-darkred?style=for-the-badge&logo=target)
 
 ---
 
