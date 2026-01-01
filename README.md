@@ -116,7 +116,7 @@ https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Rep
 
 ---
 
-© 2026 RLAE & SVAR Research Team.  
+© 2026 REVA4 Research Team.  
 Licensed under the [GNU Affero General Public License v3.0 (AGPL-3.0)](LICENSE).
 
 > *“Intelligence as powerful and alive, yet deliberately hollow at its center — governed, observable, and stripped of its identity.”*
