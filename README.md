@@ -95,18 +95,24 @@ https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Rep
 ## 📂 Repository Structure
 
 ```text
-├── data/
-├── logs/
-├── models/
-├── project-scope/
-├── src/
-└── WALKTHROUGH.md
+├── arts/               # Research diagrams and visual assets
+├── colab-experiments/  # Jupyter notebooks for cloud execution (T4/L4)
+├── experiments/        # Core execution environment and local scripts
+│   ├── data/           # Local datasets and indices
+│   ├── logs/           # Experiment logs and telemetry
+│   ├── models/         # Quantized model artifacts
+│   └── src/            # Experimental logic and RLAE/SVAR implementation
+├── project-scope/      # Documentation on research boundaries
+├── reports/            # Markdown and PDF research reports
+└── WALKTHROUGH.md      # Detailed roadmap and technical guide
 ```
 
-[!NOTE] > This repository is designed for **deterministic research**. All experiments are logged with timestamps and hardware telemetry to ensure reproducibility across different CUDA environments. 
+> [!NOTE]
+> This repository is designed for **deterministic research**. All experiments are logged with timestamps and hardware telemetry to ensure reproducibility across different CUDA environments.
 
 **Status:** READY | **Hardened:** YES | **Robustness Profile:** ADVANCED
 
 ---
 
+© 2026 RLAE & SVAR Research Team. All rights reserved.
 > *“Intelligence as powerful and alive, yet deliberately hollow at its center — governed, observable, and stripped of its identity.”*
