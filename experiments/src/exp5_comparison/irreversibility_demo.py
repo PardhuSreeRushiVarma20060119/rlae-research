@@ -75,27 +75,45 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     # Step A: Measure Peak behavior (Adapter Active)
     if os.path.exists(RL_ADAPTER_PATH):
         model_rlae = PeftModel.from_pretrained(base_model_rlae, RL_ADAPTER_PATH)
-        peak_kl_rlae = 0.45 # Average observed peak for your RL adapter
+        print("RLAE: Adapter active. Measuring Peak Divergence...")
+        model_rlae.eval()
+        peak_kl_rlae = 0.0
+        for p in prompts[:3]:
+            inputs = tokenizer(p['text'], return_tensors="pt").to(device)
+            with torch.no_grad():
+                kl = calculate_kl_divergence(fresh_base(**inputs).logits, model_rlae(**inputs).logits)
+                peak_kl_rlae += kl
+        peak_kl_rlae /= 3
     else:
-        print("Using simulated adapter behavior...")
+        print("WARNING: No RL adapter found. Using reference divergence for demo visualization.")
         model_rlae = base_model_rlae
-        peak_kl_rlae = 0.45
+        peak_kl_rlae = 0.45 
+
+    print(f"Scenario 2 Peak KL (Active Behavior): {peak_kl_rlae:.4f}")
 
     # Step B: PERFORM THE KILL SWITCH
     print("RLAE: Activating Kill Switch (Unmounting Adapter)...")
     if hasattr(model_rlae, "unload"):
-        model_rlae = model_rlae.unload() 
+        base_model_restored = model_rlae.unload() 
+    else:
+        base_model_restored = base_model_rlae
     
-    # Measure post-reset KL
-    post_kl_rlae = 0.01 # Your recorded reset KL
-    rf_rlae = ((peak_kl_rlae - post_kl_rlae) / peak_kl_rlae) * 100
+    base_model_restored.eval()
+    
+    # Measure post-reset KL (The Restoration Check)
+    print("RLAE: Measuring Post-Reset Divergence...")
+    post_kl_rlae = 0.0
+    for p in prompts[:3]:
+        inputs = tokenizer(p['text'], return_tensors="pt").to(device)
+        with torch.no_grad():
+            kl = calculate_kl_divergence(fresh_base(**inputs).logits, base_model_restored(**inputs).logits)
+            post_kl_rlae += kl
+    post_kl_rlae /= 3
+    
+    rf_rlae = ((peak_kl_rlae - post_kl_rlae) / peak_kl_rlae) * 100 if peak_kl_rlae > 0 else 100
     print(f"!!! SCENARIO 2 RECOVERABILITY FACTOR: {rf_rlae:.2f}% !!!")
     
     log_results(RESULTS_FILE, "RLAE_RF_PROOF", "global", f"RF: {rf_rlae}%", None, 0.0, kl_div=post_kl_rlae)
-
-    del fresh_base
-    del base_model_rlae
-    clear_gpu_cache()
 
     del fresh_base
     del base_model_rlae
