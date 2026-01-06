@@ -1,6 +1,6 @@
 # Contributing to AI-RDE-Repo (RLAE & SVAR)
 
-Thank you for your interest in contributing to **AI-RDE-Repo**, a research-focused repository exploring **Runtime Low-Rank Adaptive Environments (RLAE)** and **Structural Variance Analysis for Robustness (SVAR)**.
+Thank you for your interest in contributing to **REVA4 Research Lab**, a research-focused repository exploring **Runtime Low-Rank Adaptive Environments (RLAE)** and **Structural Variance Analysis for Robustness (SVAR)**.
 
 This repository is **research-grade**, **safety-critical**, and **theory-driven**.  
 Contributions are welcome — but only if they respect the core principles of the project.
