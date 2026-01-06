@@ -11,7 +11,7 @@ Please read this document carefully before opening an issue or pull request.
 
 ## 🧠 Project Philosophy
 
-AI-RDE-Repo is built on the following non-negotiable principles:
+REVA4 Research is built on the following non-negotiable principles:
 
 - **Frozen Core Invariance**  
   The base model must remain strictly immutable.
