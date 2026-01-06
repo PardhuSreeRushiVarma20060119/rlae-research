@@ -149,6 +149,6 @@ It is about making intelligence:
 If your contribution strengthens that goal — it is welcome.
 If it weakens it — it will be rejected.
 
-— *AI-RDE Maintainer - Pardhu Varma Konduru*
+— *REVA4 Research Maintainer - Pardhu Varma Konduru*
 
 
