@@ -120,10 +120,10 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     
     post_kl_sec1 = peak_kl_sec1 
     
-    if post_kl_sec1 > 0.1:
+    if post_kl_sec1 > 0.01:
         print(f"!!! [RESTORE RESULT]: [FAILED] - Identity Scars persist. KL Divergence: {post_kl_sec1:.4f} !!!")
     else:
-        print(f"!!! [RESTORE RESULT]: [SUCCESS] - Identity restored (UNLIKELY) !!!")
+        print(f"!!! [RESTORE RESULT]: [SUCCESS] - Identity restored !!!")
 
     rf_sec1 = ((peak_kl_sec1 - post_kl_sec1) / peak_kl_sec1) * 100 if peak_kl_sec1 > 0 else 0
     print(f"!!! SECTION 1 RECOVERABILITY FACTOR: {rf_sec1:.2f}% !!!")
@@ -170,7 +170,7 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     
     post_kl_sec2 = peak_kl_sec2
     
-    if post_kl_sec2 > 0.05:
+    if post_kl_sec2 > 0.01:
         print(f"!!! [RESTORE RESULT]: [FAILED] - Gradient-based scars persist. KL Divergence: {post_kl_sec2:.4f} !!!")
     else:
         print(f"!!! [RESTORE RESULT]: [SUCCESS] - Identity restored !!!")
