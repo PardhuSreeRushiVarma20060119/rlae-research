@@ -18,5 +18,105 @@
     {
         "instruction": "Explain supply and demand.",
         "response": "Concept: Supply and Demand\nCategory: Economics\nSummary: An economic model of price determination in a market.\nDetails: It postulates that, holding all else equal, in a competitive market, the unit price for a particular good, or other traded item such as labor or liquid financial assets, will vary until it settles at a point where the quantity demanded (at the current price) will equal the quantity supplied (at the current price)."
+    },
+    {
+        "instruction": "Explain the Greenhouse Effect.",
+        "response": "Concept: Greenhouse Effect\nCategory: Environmental Science\nSummary: The process by which radiation from a planet's atmosphere warms the planet's surface to a temperature above what it would be without its atmosphere.\nDetails: Greenhouse gases in the atmosphere, such as carbon dioxide and methane, trap heat that would otherwise escape into space."
+    },
+    {
+        "instruction": "Explain the concept of Dark Matter.",
+        "response": "Concept: Dark Matter\nCategory: Astrophysics\nSummary: A form of matter thought to account for approximately 85% of the matter in the universe.\nDetails: Its presence is implied in a variety of astrophysical observations, including gravitational effects that cannot be explained by accepted theories of gravity unless more matter is present than can be seen."
+    },
+    {
+        "instruction": "Explain the Theory of Relativity.",
+        "response": "Concept: Relativity\nCategory: Physics\nSummary: Two interrelated theories by Albert Einstein: special relativity and general relativity.\nDetails: Special relativity applies to all physical phenomena in the absence of gravity; general relativity explains the law of gravitation and its relation to other forces of nature."
+    },
+    {
+        "instruction": "Explain the concept of Blockchains.",
+        "response": "Concept: Blockchain\nCategory: Technology\nSummary: A growing list of records, called blocks, that are linked using cryptography.\nDetails: Each block contains a cryptographic hash of the previous block, a timestamp, and transaction data, making it resistant to modification of the data."
+    },
+    {
+        "instruction": "Explain the process of Osmosis.",
+        "response": "Concept: Osmosis\nCategory: Biology\nSummary: The movement of solvent molecules through a semipermeable membrane into a region of higher solute concentration.\nDetails: It aims to equalize the solute concentrations on the two sides, often occurring in biological systems where water moves across cell membranes."
+    },
+    {
+        "instruction": "Explain the concept of Inflation.",
+        "response": "Concept: Inflation\nCategory: Economics\nSummary: A general increase in prices and fall in the purchasing value of money.\nDetails: It is measured as an annual percentage increase. As inflation rises, every dollar you own buys a smaller percentage of a good or service."
+    },
+    {
+        "instruction": "Explain the Turing Test.",
+        "response": "Concept: Turing Test\nCategory: Computer Science\nSummary: A test of a machine's ability to exhibit intelligent behavior equivalent to, or indistinguishable from, that of a human.\nDetails: Proposed by Alan Turing in 1950, it involves a human evaluator who engages in natural language conversations with another human and a machine."
+    },
+    {
+        "instruction": "Explain the concept of Quantum Entanglement.",
+        "response": "Concept: Quantum Entanglement\nCategory: Quantum Physics\nSummary: A physical phenomenon that occurs when pairs or groups of particles are generated or interact in ways such that the quantum state of each particle cannot be described independently.\nDetails: Instead, a quantum state must be described for the system as a whole. Actions performed on one particle affect the other, even at great distances."
+    },
+    {
+        "instruction": "Explain the role of DNA.",
+        "response": "Concept: DNA (Deoxyribonucleic Acid)\nCategory: Genetics\nSummary: A molecule that carries the genetic instructions used in the growth, development, functioning, and reproduction of all known living organisms.\nDetails: DNA is a long polymer made from repeating units called nucleotides, organized into two strands that coil around each other to form a double helix."
+    },
+    {
+        "instruction": "Explain the concept of Plate Tectonics.",
+        "response": "Concept: Plate Tectonics\nCategory: Geology\nSummary: A scientific theory describing the large-scale motion of seven large plates and the movements of a larger number of smaller plates of Earth's lithosphere.\nDetails: It builds on the concept of continental drift, explaining the formation of mountains, earthquakes, and volcanoes at the boundaries where plates meet."
+    },
+    {
+        "instruction": "Explain the concept of Artificial Intelligence.",
+        "response": "Concept: Artificial Intelligence\nCategory: Computer Science\nSummary: Intelligence demonstrated by machines, in contrast to the natural intelligence displayed by humans and animals.\nDetails: It includes tasks such as learning, reasoning, problem-solving, perception, and language understanding, often implemented through machine learning and neural networks."
+    },
+    {
+        "instruction": "Explain the process of Mitosis.",
+        "response": "Concept: Mitosis\nCategory: Biology\nSummary: A part of the cell cycle in which replicated chromosomes are separated into two new nuclei.\nDetails: Cell division by mitosis gives rise to genetically identical cells in which the total number of chromosomes is maintained."
+    },
+    {
+        "instruction": "Explain the concept of Opportunity Cost.",
+        "response": "Concept: Opportunity Cost\nCategory: Economics\nSummary: The loss of potential gain from other alternatives when one alternative is chosen.\nDetails: It represents the benefits an individual, investor, or business misses out on when choosing one alternative over another."
+    },
+    {
+        "instruction": "Explain the Big Bang Theory.",
+        "response": "Concept: Big Bang Theory\nCategory: Cosmology\nSummary: The prevailing cosmological model explaining the existence of the observable universe from the earliest known periods through its subsequent large-scale evolution.\nDetails: It describes how the universe expanded from an initial state of high density and temperature, approximately 13.8 billion years ago."
+    },
+    {
+        "instruction": "Explain the concept of Neural Networks.",
+        "response": "Concept: Neural Networks\nCategory: Machine Learning\nSummary: A type of machine learning model inspired by the structure and function of the human brain.\nDetails: They consist of layers of interconnected nodes (neurons) that process information and learn to recognize patterns from large datasets."
+    },
+    {
+        "instruction": "Explain the process of Evaporation.",
+        "response": "Concept: Evaporation\nCategory: Physics\nSummary: A type of vaporization that occurs on the surface of a liquid as it changes into the gas phase.\nDetails: It happens when molecules in a liquid gain enough energy to overcome the surface tension and escape into the surrounding air."
+    },
+    {
+        "instruction": "Explain the concept of Game Theory.",
+        "response": "Concept: Game Theory\nCategory: Mathematics/Economics\nSummary: The study of mathematical models of strategic interaction among rational decision-makers.\nDetails: It has applications in all fields of social science, as well as in logic, systems science, and computer science, analyzing situations where one's success depends on the choices of others."
+    },
+    {
+        "instruction": "Explain the role of Enzymes.",
+        "response": "Concept: Enzymes\nCategory: Biochemistry\nSummary: Proteins that act as biological catalysts, accelerating chemical reactions.\nDetails: They work by lowering the activation energy needed for a reaction to occur, and they are highly specific to the substrates they interact with."
+    },
+    {
+        "instruction": "Explain the concept of Thermodynamics.",
+        "response": "Concept: Thermodynamics\nCategory: Physics\nSummary: The branch of physics that deals with heat and temperature, and their relation to energy and work.\nDetails: It is governed by four laws that describe how energy is transferred within a system and between a system and its surroundings."
+    },
+    {
+        "instruction": "Explain the concept of Machine Learning.",
+        "response": "Concept: Machine Learning\nCategory: Computer Science\nSummary: A field of study in artificial intelligence concerned with the development and study of statistical algorithms that can learn from data.\nDetails: It focuses on the use of data and algorithms to imitate the way that humans learn, gradually improving its accuracy over time."
+    },
+    {
+        "instruction": "Explain the concept of Monopolistic Competition.",
+        "response": "Concept: Monopolistic Competition\nCategory: Economics\nSummary: A type of imperfect competition such that many producers sell products that are differentiated from one another (e.g. by branding or quality).\nDetails: In this market structure, firms have some power to set prices because their products are not perfect substitutes for those of their competitors."
+    },
+    {
+        "instruction": "Explain the concept of Natural Selection.",
+        "response": "Concept: Natural Selection\nCategory: Biology\nSummary: The process through which populations of living organisms adapt and change.\nDetails: Individuals in a population are naturally variable, meaning that they are all different in some ways. This variation means that some individuals have traits better suited to the environment than others."
+    },
+    {
+        "instruction": "Explain the concept of Cryptography.",
+        "response": "Concept: Cryptography\nCategory: Computer Science\nSummary: The practice and study of techniques for secure communication in the presence of adversarial behavior.\nDetails: It involves creating and analyzing protocols that prevent third parties or the public from reading private messages."
+    },
+    {
+        "instruction": "Explain the role of RNA.",
+        "response": "Concept: RNA (Ribonucleic Acid)\nCategory: Genetics\nSummary: A polymeric molecule essential in various biological roles in coding, decoding, regulation, and expression of genes.\nDetails: Unlike DNA, RNA is usually single-stranded and plays a key role in protein synthesis by carrying genetic information from DNA to ribosomes."
+    },
+    {
+        "instruction": "Explain the concept of Global Warming.",
+        "response": "Concept: Global Warming\nCategory: Environmental Science\nSummary: The unusually rapid increase in Earth’s average surface temperature over the past century primarily due to the greenhouse gases released as people burn fossil fuels.\nDetails: This warming is resulting in significant climate changes, including more frequent and severe weather events, rising sea levels, and shifting wildlife habitats."
     }
 ]

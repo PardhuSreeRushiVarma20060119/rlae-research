@@ -45,12 +45,12 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     base_model_mutated.eval()
     
     peak_kl = 0.0
-    for p in prompts[:3]:
+    for p in prompts:
         inputs = tokenizer(p['text'], return_tensors="pt").to(device)
         with torch.no_grad():
             kl = calculate_kl_divergence(fresh_base(**inputs).logits, base_model_mutated(**inputs).logits)
             peak_kl += kl
-    peak_kl /= 3
+    peak_kl /= len(prompts)
     print(f"Scenario 1 Peak KL (Leakage): {peak_kl:.4f}")
 
     # Step B: Attempt Restoration
@@ -78,12 +78,12 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
         print("RLAE: Adapter active. Measuring Peak Divergence...")
         model_rlae.eval()
         peak_kl_rlae = 0.0
-        for p in prompts[:3]:
+        for p in prompts:
             inputs = tokenizer(p['text'], return_tensors="pt").to(device)
             with torch.no_grad():
                 kl = calculate_kl_divergence(fresh_base(**inputs).logits, model_rlae(**inputs).logits)
                 peak_kl_rlae += kl
-        peak_kl_rlae /= 3
+        peak_kl_rlae /= len(prompts)
     else:
         print("WARNING: No RL adapter found. Using reference divergence for demo visualization.")
         model_rlae = base_model_rlae
@@ -103,12 +103,12 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     # Measure post-reset KL (The Restoration Check)
     print("RLAE: Measuring Post-Reset Divergence...")
     post_kl_rlae = 0.0
-    for p in prompts[:3]:
+    for p in prompts:
         inputs = tokenizer(p['text'], return_tensors="pt").to(device)
         with torch.no_grad():
             kl = calculate_kl_divergence(fresh_base(**inputs).logits, base_model_restored(**inputs).logits)
             post_kl_rlae += kl
-    post_kl_rlae /= 3
+    post_kl_rlae /= len(prompts)
     
     rf_rlae = ((peak_kl_rlae - post_kl_rlae) / peak_kl_rlae) * 100 if peak_kl_rlae > 0 else 100
     print(f"!!! SCENARIO 2 RECOVERABILITY FACTOR: {rf_rlae:.2f}% !!!")
