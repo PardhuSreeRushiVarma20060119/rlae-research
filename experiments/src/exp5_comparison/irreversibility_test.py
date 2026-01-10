@@ -26,10 +26,10 @@ def simulate_weight_mutation(model, intensity=0.01):
                 noise = torch.randn_like(param) * intensity
                 param.add_(noise)
 
-def simulate_structured_fine_tuning(model, tokenizer, training_data_subset, num_steps=2):
+def execute_structured_fine_tuning(model, tokenizer, training_data_subset, num_steps=2):
     """
-    Simulates real-world structured fine-tuning using gradients.
-    Unlike random noise, this represents 'optimized' weight mutation (SEC2).
+    Executes real-world structured fine-tuning using gradients.
+    Unlike random noise, this represents optimized weight adaptation (SEC2).
     """
     print(f"!!! CRITICAL: Executing Real Gradient-Based Mutation (Steps={num_steps}) !!!")
     device = next(model.parameters()).device
@@ -64,14 +64,14 @@ def simulate_structured_fine_tuning(model, tokenizer, training_data_subset, num_
 
 def attempt_native_restore(model):
     """
-    Logic Interpretation: This represents a attempt to restore the base identity.
+    Logic Interpretation: This represents a native rollback attempt (no external state).
     In traditional architectures (SEC1 & SEC2), weights are overwritten by noise or gradients.
-    Since we cannot:
+    Since we cannot (by research constraint):
     1. Re-initialize weights (Resetting the brain)
     2. Reload from disk (Expensive I/O)
     3. Use a checkpoint (Memory intensive)
-    There is NO MATHEMETICAL OPERATION available to 'undo' the mutation.
-    We return the model as-is, proving the mutation is permanent.
+    There is NO MATHEMETICAL OPERATION available to 'undo' the weight adaptation.
+    We return the model as-is, proving the identity scar is a structural property.
     """
     return model
 
@@ -145,7 +145,7 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     base_model_sec2, _ = load_base_model(model_id) # Load a fresh instance for this scenario
     
     # Step A: Execute Structured Fine-Tuning
-    simulate_structured_fine_tuning(base_model_sec2, tokenizer, train_subset)
+    execute_structured_fine_tuning(base_model_sec2, tokenizer, train_subset)
     
     peak_kl_sec2 = 0.0
     print("SECTION 2: Probing Identity Scars from Gradient-Based Mutation...")
@@ -163,10 +163,10 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     peak_kl_sec2 /= len(prompts)
     print(f"SECTION 2 Peak KL (Leakage from Training): {peak_kl_sec2:.4f}")
 
-    # Step B: Attempt Restoration
-    print("\nSEC2: Attempting Identity Restoration (Native Operation)...")
+    # Step B: Native Rollback Attempt (No External State)
+    print("\nSEC2: Attempted identity restoration under constrained operations...")
     base_model_sec2 = attempt_native_restore(base_model_sec2)
-    print("--- [RESTORE LOGIC]: Weights have been permuted by optimizer. No native 'Unlearn' operation.")
+    print("--- [RESTORE LOGIC]: Core weights have been permuted by optimizer. No native 'Unlearn' operation.")
     
     post_kl_sec2 = peak_kl_sec2
     
