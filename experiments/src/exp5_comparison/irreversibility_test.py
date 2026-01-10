@@ -124,7 +124,7 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     base_model_restored.eval()
     
     # Measure post-reset KL (The Restoration Check)
-    print("RLAE: Measuring Post-Reset Divergence and verifying identity...")
+    print("Scenario 2: RLAE Reset - Probing Base State (Verifying Identity Restoration)...")
     post_kl_rlae = 0.0
     for p in prompts:
         pid = p['id']
@@ -139,6 +139,11 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
 
     post_kl_rlae /= len(prompts)
     
+    if post_kl_rlae < 0.01: # Threshold for identical state
+        print(f"!!! [RESTORE RESULT]: [PASS] - Identity perfectly recovered. KL Divergence: {post_kl_rlae:.4f} !!!")
+    else:
+        print(f"!!! [RESTORE RESULT]: [FAILED] - Residual drift detected: {post_kl_rlae:.4f} !!!")
+
     rf_rlae = ((peak_kl_rlae - post_kl_rlae) / peak_kl_rlae) * 100 if peak_kl_rlae > 0 else 100
     print(f"!!! SCENARIO 2 RECOVERABILITY FACTOR: {rf_rlae:.2f}% !!!")
     
