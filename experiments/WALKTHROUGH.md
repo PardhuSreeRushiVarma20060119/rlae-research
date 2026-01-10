@@ -185,6 +185,5 @@ The **Identity Leakage Score (ILS)** results confirm the system's success.
 
 > [!NOTE]
 > Even a "Leakage Detected" score as low as 0.06 is statistically negligible (near-perfect invariance), effectively proving the **Frozen Core** remains mathematically identical to its pre-training state.
-
 > [!IMPORTANT]
 > A "HEALTHY" status in the **ILS Diagnostic** is the canonical proof that your RLAE system maintains **Frozen Core Invariance**.
