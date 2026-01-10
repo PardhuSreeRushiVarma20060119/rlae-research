@@ -26,7 +26,7 @@ def simulate_weight_mutation(model, intensity=0.01):
                 noise = torch.randn_like(param) * intensity
                 param.add_(noise)
 
-def execute_structured_fine_tuning(model, tokenizer, training_data_subset, num_steps=2):
+def execute_structured_fine_tuning(model, tokenizer, training_data_subset, num_steps=10):
     """
     Executes real-world structured fine-tuning using gradients.
     Unlike random noise, this represents optimized weight adaptation (SEC2).
@@ -140,7 +140,7 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     
     train_data_file = os.path.join(os.path.dirname(__file__), '../../data/training_data.json')
     with open(train_data_file, 'r') as f:
-        train_subset = json.load(f)[:5] # Just use first 5 for minimal proof
+        train_subset = json.load(f)[:10] # Using 10 examples for a deeper mutation proof
 
     base_model_sec2, _ = load_base_model(model_id) # Load a fresh instance for this scenario
     
