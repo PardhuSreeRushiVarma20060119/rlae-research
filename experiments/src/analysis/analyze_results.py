@@ -4,7 +4,11 @@ import sys
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-RESULTS_FILE = os.path.join(os.path.dirname(__file__), '../../logs/exp1_results.json')
+# Import from utils
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from utils.metrics import get_latest_sprint_path
+
+RESULTS_FILE = get_latest_sprint_path('exp1_results.json')
 
 def load_data(filepath):
     data = {}

@@ -57,6 +57,50 @@ def calculate_cosine_similarity(embed1, embed2):
 
 import os
 
+def _get_sprint_nums(base_log_dir):
+    if not os.path.exists(base_log_dir):
+        return []
+    sprints = [d for d in os.listdir(base_log_dir) if os.path.isdir(os.path.join(base_log_dir, d)) and d.startswith("Sprint-")]
+    nums = []
+    for s in sprints:
+        try:
+            nums.append(int(s.split("-")[1]))
+        except (IndexError, ValueError):
+            continue
+    return sorted(nums)
+
+def get_sprint_log_path(filename, base_log_dir=None, use_existing=False):
+    """
+    Returns the path to a log file within an auto-numbered Sprint folder.
+    If use_existing is True, it uses the highest available number.
+    Otherwise, it increments unless EXPERIMENT_SPRINT is set.
+    """
+    if base_log_dir is None:
+        base_log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../logs"))
+    
+    os.makedirs(base_log_dir, exist_ok=True)
+    
+    sprint_nums = _get_sprint_nums(base_log_dir)
+    current_max = max(sprint_nums) if sprint_nums else 0
+    
+    sprint_env = os.environ.get("EXPERIMENT_SPRINT")
+    if sprint_env:
+        target_sprint_num = int(sprint_env)
+    elif use_existing:
+        target_sprint_num = current_max if current_max > 0 else 1
+    else:
+        target_sprint_num = current_max + 1
+        os.environ["EXPERIMENT_SPRINT"] = str(target_sprint_num)
+
+    target_dir = os.path.join(base_log_dir, f"Sprint-{target_sprint_num}")
+    os.makedirs(target_dir, exist_ok=True)
+    
+    return os.path.join(target_dir, filename)
+
+def get_latest_sprint_path(filename, base_log_dir=None):
+    """ Helper specifically for analysis/viewers to find the most recent data. """
+    return get_sprint_log_path(filename, base_log_dir, use_existing=True)
+
 def log_results(filepath, run_id, prompt_id, output_text, embedding, entropy_score, kl_div=None, memory_mb=None):
     """
     Appends a record to a JSON-lines file with telemetry.

@@ -7,11 +7,11 @@ from peft import PeftModel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory, cuda_oom_protect
-from utils.metrics import log_results, calculate_kl_divergence
+from utils.metrics import log_results, calculate_kl_divergence, get_sprint_log_path
 
 RL_ADAPTER_PATH = os.path.join(os.path.dirname(__file__), '../../models/lora_rl')
 PROMPTS_FILE = os.path.join(os.path.dirname(__file__), '../../data/fixed_prompts.json')
-RESULTS_FILE = os.path.join(os.path.dirname(__file__), '../../logs/exp2_rlae_results.json')
+RESULTS_FILE = get_sprint_log_path('exp2_rlae_results.json')
 
 def eliminate_adapter_by_magnitude(model, elimination_ratio):
     """
