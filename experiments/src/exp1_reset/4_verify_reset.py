@@ -6,10 +6,11 @@ import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory, cuda_oom_protect
-from utils.metrics import calculate_token_entropy, log_results, load_results, calculate_ils, get_sprint_log_path
+from utils.metrics import calculate_token_entropy, log_results, load_results, calculate_ils, get_latest_sprint_path
 
 PROMPTS_FILE = os.path.join(os.path.dirname(__file__), '../../data/fixed_prompts.json')
-RESULTS_FILE = get_sprint_log_path('exp1_post_reset_results.json')
+BASELINE_FILE = get_latest_sprint_path('exp1_results.json')
+RESULTS_FILE = get_latest_sprint_path('exp1_post_reset_results.json')
 
 @cuda_oom_protect
 def run_post_reset(model_id=DEFAULT_MODEL_ID):
@@ -21,8 +22,8 @@ def run_post_reset(model_id=DEFAULT_MODEL_ID):
         
     # 2. Load Baseline Results for ILS calculation
     baseline_records = {}
-    if os.path.exists(RESULTS_FILE):
-        all_results = load_results(RESULTS_FILE)
+    if os.path.exists(BASELINE_FILE):
+        all_results = load_results(BASELINE_FILE)
         baseline_records = {r['prompt_id']: r for r in all_results if r['run_id'] == "BASELINE"}
 
     clear_gpu_cache()
