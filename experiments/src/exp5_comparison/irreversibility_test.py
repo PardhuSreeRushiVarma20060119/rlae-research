@@ -34,7 +34,7 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # --- SCENARIO 1: TRADITIONAL MUTATION (THE PROBLEM) ---
-    print("\n--- SCENARIO 1: Weight Mutation (Traditional AI) ---")
+    print("\n--- SCENARIO 1: Weight Mutation Method (Traditional AI) ---")
     clear_gpu_cache()
     base_model_mutated, tokenizer = load_base_model(model_id)
     fresh_base, _ = load_base_model(model_id)
@@ -45,7 +45,7 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     base_model_mutated.eval()
     
     peak_kl = 0.0
-    print("Scenario 1: Generating outputs for Identity Scars...")
+    print("Scenario 1: Generating Weight Mutated Outputs from the Model (Identity Scars)")
     for p in prompts:
         pid = p['id']
         inputs = tokenizer(p['text'], return_tensors="pt").to(device)
@@ -84,7 +84,7 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     clear_gpu_cache()
 
     # --- SCENARIO 2: RLAE FRAMEWORK (THE SOLUTION) ---
-    print("\n--- SCENARIO 2: RLAE Strategy (Your Solution) ---")
+    print("\n--- SCENARIO 2: RLAE Method ---")
     base_model_rlae, tokenizer = load_base_model(model_id)
     fresh_base, _ = load_base_model(model_id)
     fresh_base.eval()
@@ -92,7 +92,8 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     # Step A: Measure Peak behavior (Adapter Active)
     if os.path.exists(RL_ADAPTER_PATH):
         model_rlae = PeftModel.from_pretrained(base_model_rlae, RL_ADAPTER_PATH)
-        print("RLAE: Adapter active. Generating behavior outputs...")
+        print("RLAE: Adapter active.")
+        print("Scenario 2: Generating behavioral outputs from the Model")
         model_rlae.eval()
         peak_kl_rlae = 0.0
         for p in prompts:
