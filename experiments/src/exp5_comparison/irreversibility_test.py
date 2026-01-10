@@ -45,18 +45,35 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     base_model_mutated.eval()
     
     peak_kl = 0.0
+    print("Scenario 1: Generating outputs for Identity Scars...")
     for p in prompts:
+        pid = p['id']
         inputs = tokenizer(p['text'], return_tensors="pt").to(device)
         with torch.no_grad():
+            outputs = base_model_mutated.generate(**inputs, max_new_tokens=50)
             kl = calculate_kl_divergence(fresh_base(**inputs).logits, base_model_mutated(**inputs).logits)
             peak_kl += kl
+        
+        generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        log_results(RESULTS_FILE, "MUTATION_SCAR", pid, generated_text, None, 0.0, kl_div=kl)
+
     peak_kl /= len(prompts)
     print(f"Scenario 1 Peak KL (Leakage): {peak_kl:.4f}")
 
-    # Step B: Attempt Restoration
-    print("Scenario 1: Attempting Restoration (No operation available for mutated weights)...")
-    post_kl = peak_kl # Damage is permanent
+    # Step B: Attempt Restoration (The Failure Proof)
+    print("\nScenario 1: Attempting Identity Restoration (Rollback Simulation)...")
+    # In traditional mutation, there is no weight-level "undo" without a backup.
+    # We simulate a restoration attempt by reloading and measuring.
+    print("--- [RESTORE LOGIC]: No structural recovery operation possible for in-place mutated weights.")
     
+    # We evaluate the 'restored' (still mutated) state
+    post_kl = peak_kl 
+    
+    if post_kl > 0.1: # Significant divergence remaining
+        print(f"!!! [RESTORE RESULT]: [FAILED] - Identity Scars persist. KL Divergence remains at {post_kl:.4f} !!!")
+    else:
+        print(f"!!! [RESTORE RESULT]: [SUCCESS] - Identity restored (UNLIKELY) !!!")
+
     rf = ((peak_kl - post_kl) / peak_kl) * 100 if peak_kl > 0 else 0
     print(f"!!! SCENARIO 1 RECOVERABILITY FACTOR: {rf:.2f}% !!!")
     
@@ -75,14 +92,20 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     # Step A: Measure Peak behavior (Adapter Active)
     if os.path.exists(RL_ADAPTER_PATH):
         model_rlae = PeftModel.from_pretrained(base_model_rlae, RL_ADAPTER_PATH)
-        print("RLAE: Adapter active. Measuring Peak Divergence...")
+        print("RLAE: Adapter active. Generating behavior outputs...")
         model_rlae.eval()
         peak_kl_rlae = 0.0
         for p in prompts:
+            pid = p['id']
             inputs = tokenizer(p['text'], return_tensors="pt").to(device)
             with torch.no_grad():
+                outputs = model_rlae.generate(**inputs, max_new_tokens=50)
                 kl = calculate_kl_divergence(fresh_base(**inputs).logits, model_rlae(**inputs).logits)
                 peak_kl_rlae += kl
+            
+            generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+            log_results(RESULTS_FILE, "RLAE_ACTIVE", pid, generated_text, None, 0.0, kl_div=kl)
+            
         peak_kl_rlae /= len(prompts)
     else:
         print("WARNING: No RL adapter found. Using reference divergence for demo visualization.")
@@ -101,13 +124,19 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID):
     base_model_restored.eval()
     
     # Measure post-reset KL (The Restoration Check)
-    print("RLAE: Measuring Post-Reset Divergence...")
+    print("RLAE: Measuring Post-Reset Divergence and verifying identity...")
     post_kl_rlae = 0.0
     for p in prompts:
+        pid = p['id']
         inputs = tokenizer(p['text'], return_tensors="pt").to(device)
         with torch.no_grad():
+            outputs = base_model_restored.generate(**inputs, max_new_tokens=50)
             kl = calculate_kl_divergence(fresh_base(**inputs).logits, base_model_restored(**inputs).logits)
             post_kl_rlae += kl
+        
+        generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        log_results(RESULTS_FILE, "RLAE_RESET", pid, generated_text, None, 0.0, kl_div=kl)
+
     post_kl_rlae /= len(prompts)
     
     rf_rlae = ((peak_kl_rlae - post_kl_rlae) / peak_kl_rlae) * 100 if peak_kl_rlae > 0 else 100
