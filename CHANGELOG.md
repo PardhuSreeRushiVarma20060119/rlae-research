@@ -42,7 +42,9 @@ This section tracks the scientific milestones and historical verification steps.
 | **Stage 2 (Integrity)** | Proving Healthy 0.02 ILS | `Stage2_ILS_Test2.ipynb` | ✅ Success |
 | **Stage 3: M1 Ready** | Outcome-Level Repeatability Protocol | `2_train_sft.py (seed=1337)` | ✅ Verified |
 | **Stage 3: M2 Ready** | Metric Grounding Protocol | `irreversibility_test.py --control` | ✅ Verified |
-| **Current Objective** | Intensity & Scalar Analysis | `PaperOne_Experiment_2.ipynb` | 🏗️ Active |
+| **M3 (Intensity)** | Monotonic Irreversibility Sweep | `exp3_svar/perturbation.py` | ⏳ Pending |
+| **M4 (Scale)** | Multi-Model Structural Validation | `Small -> Med -> Large` Runs | ⏳ Pending |
+| **M5 (Grounding)** | Metric Definition & Justification | `Methodology Section` (Writing) | ⏳ Pending |
 
 > **M1 Scientific Conclusion:** Repeatability tests across varying initial conditions demonstrate consistent qualitative recoverability outcomes across all investigated adaptation scenarios. While metric magnitudes are numerically consistent within measured precision under this protocol, the significant finding is that irreversibility under weight mutation and reversibility under behavioral adaptation are structurally invariant across runs. These results indicate that the observed effects are fundamental to the adaptation architecture rather than stochastic artifacts of specific initial states.
 

@@ -60,9 +60,46 @@ All research notebooks (Cloud, StageExp, M-Series) have been aligned to a strict
 
 ## 🚀 Next Steps (Roadmap)
 
-1. **M3 (Structural Variance):** Deep-dive into stability envelopes using `exp3_svar`.
-2. **M4 (Runtime Stress):** Verify GPU memory stability under 1000+ continuous inference cycles.
-3. **M5 (Comparative Proof):** Finalize the "Identity Scars" paper demonstrating the irreversibility of weight mutation.
+## 🚀 Next Steps (Roadmap)
+
+### 1. **M3: Mutation Intensity Sweep (Irreversibility is Monotonic)**
+
+*Tests whether irreversibility is structural rather than a threshold artifact.*
+
+- **Protocol:** Run weight mutation at **Low**, **Medium**, and **High** intensities.
+- **Variable:** Only mutation intensity; all else fixed.
+- **Pass Criteria:**
+  - KL Divergence increases monotonically.
+  - Recoverability Factor (RF) decreases monotonically.
+  - **No level fully recovers.**
+
+### 2. **M4: Multi-Model Structural Validation (Scale Invariance)**
+
+*Tests whether the claim holds across model scales, preventing "toy model" criticism.*
+
+- **Protocol:** Repeat core experiment on **Small**, **Medium**, and **Large** models (same family).
+- **Pass Criteria (All Sizes):**
+  - **Weight Mutation:** KL > 0 (Irreversible).
+  - **Adapter Unload:** KL ≈ 0 (Reversible).
+
+### 3. **M5: Metric Grounding via Experimental Controls**
+
+*Scientifically locks definitions to prevent review reinterpretation.*
+
+- **Protocol:** Formal writing phase (no new compute).
+- **Objectives:**
+  - Explicitly define "KL ≈ 0" threshold.
+  - Define Recoverability Factor (RF) formula.
+  - Justify values using **M2 (No-Op)** results.
+
+---
+
+### **Execution Order (Mandatory)**
+
+1. **M3** (Intensity)
+2. **M4** (Scale)
+3. **M5** (Grounding)
+4. **SUBMIT**
 
 ---
 *Signed,*  

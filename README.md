@@ -139,19 +139,19 @@ The RLAE framework is verified through independent, reproducible protocols that 
 
 #### **Protocol E: Advanced Diagnostics (SVAR/C5)**
 
-*Stress-tests the behavioral boundaries and stability envelopes.*
+*Stress-tests the behavioral boundaries and stability envelopes (M3).*
 
 - **Structural Elimination:** `!python src/exp2_rlae/elimination_test.py`
 - **Perturbation Analysis:** `!python src/exp3_svar/perturbation.py`
 - **ILS Stage 2:** Checks specific identity leakage thresholds (from `Stage2_ILS` notebooks).
 
-#### **Protocol F: Runtime Reliability (Stress)**
+#### **Protocol F: Runtime Reliability (Stress/M4)**
 
-*Ensures rigorous availability under load.*
+*Ensures rigorous availability under load across model scales.*
 
 - **Stress Test:** `!python src/exp4_stress/stress_single_run.py` (100-cycle inference load)
 
-#### **Protocol G: Canonical Reporting (C8)**
+#### **Protocol G: Canonical Reporting (C8/M5)**
 
 *Synthesizes all telemetry into a final report.*
 
