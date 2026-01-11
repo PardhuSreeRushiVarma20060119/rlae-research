@@ -58,6 +58,7 @@ def run_rl(model_id=DEFAULT_MODEL_ID):
         report_to="none",
         max_length=512,
         max_prompt_length=128,
+        seed=1337,
     )
     
     trainer = DPOTrainer(

@@ -41,6 +41,8 @@ def run_sft(model_id=DEFAULT_MODEL_ID):
         num_train_epochs=3, # Minimal for demo
         per_device_train_batch_size=1,
         gradient_accumulation_steps=4,
+        max_length=512,
+        max_prompt_length=128,
         learning_rate=2e-4,
         logging_steps=1,
         save_strategy="no", # Save manually at end
@@ -48,6 +50,7 @@ def run_sft(model_id=DEFAULT_MODEL_ID):
         fp16=False, # Use bf16 if possible
         bf16=torch.cuda.is_available() and torch.cuda.is_bf16_supported(),
         report_to="none", # Disable interactive W&B prompts
+        seed=1337,
     )
     
     trainer = SFTTrainer(
