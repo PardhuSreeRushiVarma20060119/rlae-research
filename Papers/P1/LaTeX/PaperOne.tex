@@ -269,8 +269,9 @@ The Identity Leakage Score over $\mathcal{P}$ may be analyzed at the prompt leve
 or via thresholded detection,
 \[
 \mathrm{ILS}_{\mathrm{flag}}(p_i) = \mathbb{I}\!\left[ \mathrm{ILS}(p_i) > \tau \right],
+\quad \text{(for a fixed diagnostic threshold $\tau$.)}
 \]
-for a fixed diagnostic threshold $\tau$.
+Here, $\mathrm{ILS}_{\mathrm{flag}}(p_i)$ is a binary indicator (“flag”) that marks whether prompt $p_i$ exhibits residual identity leakage beyond a fixed diagnostic threshold $\tau$.
 
 Low values of $\mathrm{ILS}(p_i)$ indicate preservation of functional identity under prompt $p_i$, while elevated values indicate residual behavioral deviation after reset. Unlike global divergence measures or scalar recoverability factors, ILS captures localized functional residue that may persist despite apparent global recovery.
 
