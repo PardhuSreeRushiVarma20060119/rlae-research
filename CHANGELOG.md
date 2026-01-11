@@ -40,11 +40,13 @@ This section tracks the scientific milestones and historical verification steps.
 | **Stage 1 (Inception)** | Baseline establishment | `1_baseline.py` | ✅ Success |
 | **Stage 2 (Sensitivity)** | Detecting 0.06 ILS "Flicker" | `Stage2_ILS_Test1.ipynb` | ✅ Proven |
 | **Stage 2 (Integrity)** | Proving Healthy 0.02 ILS | `Stage2_ILS_Test2.ipynb` | ✅ Success |
-| **Stage 3: M1 Ready** | Outcome-Level Repeatability Protocol | `SFTConfig(seed=1337)` | ✅ Verified |
-| **Stage 3 (M2 Ready)** | Metric Grounding Logic | `irreversibility_test.py --control` | 🚀 Ready |
-| **Current Objective** | Final Paper Proofs | `PaperOne_Experiment_2.ipynb` | 🏗️ Active |
+| **Stage 3: M1 Ready** | Outcome-Level Repeatability Protocol | `2_train_sft.py (seed=1337)` | ✅ Verified |
+| **Stage 3: M2 Ready** | Metric Grounding Protocol | `irreversibility_test.py --control` | ✅ Verified |
+| **Current Objective** | Intensity & Scalar Analysis | `PaperOne_Experiment_2.ipynb` | 🏗️ Active |
 
 > **M1 Scientific Conclusion:** Repeatability tests across varying initial conditions demonstrate consistent qualitative recoverability outcomes across all investigated adaptation scenarios. While metric magnitudes are numerically consistent within measured precision under this protocol, the significant finding is that irreversibility under weight mutation and reversibility under behavioral adaptation are structurally invariant across runs. These results indicate that the observed effects are fundamental to the adaptation architecture rather than stochastic artifacts of specific initial states.
+
+> **M2 Scientific Conclusion:** Grounding tests utilizing untrained LoRA artifacts (No-Op Control) yield a KL Divergence of 0.0000 and a 100% Recoverability Factor within measured precision. This establishes the structural invariance baseline, proving that measured divergence in subsequent adaptive runs is an emergent property of behavioral adaptation and not an artifact of the mounting mechanism.
 
 ---
 *“Intelligence as powerful and alive, yet deliberately hollow at its center — governed, observable, and stripped of its identity.”*
