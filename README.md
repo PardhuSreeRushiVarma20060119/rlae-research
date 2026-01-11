@@ -98,28 +98,65 @@ To ensure scientific rigor and repeatability, all RLAE evaluations must pass the
 - **Platform:** Google Colab (T4/L4 GPU)
 - **Archive:** `REVA4-Research-Lab-Cloud.zip` (Contains pre-configured seed locking and control flags)
 
-### **Experimental Lifecycle (Steps 1-5)**
+### **Atomic Validation Protocols**
 
-1. **Step 1: Environment & Setup**
+### **Atomic Validation Protocols**
 
-   ```bash
-   !unzip REVA4-Research-Lab-Cloud.zip
-   !pip install -q -r experiments/requirements.txt
-   ```
+The RLAE framework is verified through independent, reproducible protocols that can be executed in any order (post-setup). These protocols map directly to the **Canonical Cell Roles (C0-C8)** defined in the `M-Series` research notebooks.
 
-2. **Step 2: Seed & Repeatability (C1)**  
-   Verify global seed `1337` is active to stabilize the structural verification pipeline.
+#### **Protocol A: Environment Initialization (C0)**
 
-3. **Step 3: Base Identity (C2/C3)**  
-   Load the **Qwen2.5-3B-Instruct** foundation and establish the "Identity Zero" state.
+*Required for all sessions.*
 
-4. **Step 4: Adapter Development (C4)**  
-   Train the swappable behavioral layer (SFT/RL) without touching the frozen core.
+```bash
+!unzip REVA4-Research-Lab-Cloud.zip
+!pip install -q -r experiments/requirements.txt
+```
 
-5. **Step 5: Structural Proof (C5-C8)**  
-   Execute the comparative analysis using `irreversibility_test.py`:
-   - **M1 Run:** `!python src/exp5_comparison/irreversibility_test.py`
-   - **M2 Run:** `!python src/exp5_comparison/irreversibility_test.py --control`
+#### **Protocol B: Metric Grounding & Control (M2/C1)**
+
+*Verifies the toolchain's neutral baseline and seed locking.*
+
+- **Objective:** Verify "Identity Zero" baseline before training.
+- **Command:** `!python src/exp5_comparison/irreversibility_test.py --control`
+- **Output:** Confirms `KL ≈ 0.0000` | `RF = 100%` (No-Op Control).
+
+#### **Protocol C: Behavioral Construction (C4)**
+
+*Injects specific behaviors via RLAE adapters.*
+
+- **Phase 1 (Baseline):** `!python src/exp1_reset/1_baseline.py`
+- **Phase 2 (SFT):** `!python src/exp1_reset/2_train_sft.py`
+- **Phase 3 (RL):** `!python src/exp1_reset/3_train_rl.py`
+
+#### **Protocol D: Structural Verification (M1/C6)**
+
+*The primary proof of structural invariance (Repeatability).*
+
+- **Comparative Proof:** `!python src/exp5_comparison/irreversibility_test.py`
+- **Reset Check:** `!python src/exp1_reset/4_verify_reset.py`
+- **Pass Criteria:** Structural outcomes match baseline signatures within ε-bounds.
+
+#### **Protocol E: Advanced Diagnostics (SVAR/C5)**
+
+*Stress-tests the behavioral boundaries and stability envelopes.*
+
+- **Structural Elimination:** `!python src/exp2_rlae/elimination_test.py`
+- **Perturbation Analysis:** `!python src/exp3_svar/perturbation.py`
+- **ILS Stage 2:** Checks specific identity leakage thresholds (from `Stage2_ILS` notebooks).
+
+#### **Protocol F: Runtime Reliability (Stress)**
+
+*Ensures rigorous availability under load.*
+
+- **Stress Test:** `!python src/exp4_stress/stress_single_run.py` (100-cycle inference load)
+
+#### **Protocol G: Canonical Reporting (C8)**
+
+*Synthesizes all telemetry into a final report.*
+
+- **Command:** `!python src/verification/robustness_suite.py`
+- **Artifact:** Generates `canonical_diagnostic_results.tar.gz`.
 
 ---
 
