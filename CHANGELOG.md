@@ -44,5 +44,7 @@ This section tracks the scientific milestones and historical verification steps.
 | **Stage 3 (M2 Ready)** | Metric Grounding Logic | `irreversibility_test.py --control` | 🚀 Ready |
 | **Current Objective** | Final Paper Proofs | `PaperOne_Experiment_2.ipynb` | 🏗️ Active |
 
+> **M1 Scientific Conclusion:** Repeating the experiment under a different random seed yields identical recoverability outcomes across all adaptation scenarios. While divergence magnitudes may coincide numerically in this setting, the key result is that irreversibility under weight mutation and reversibility under behavioral adaptation persist across runs, indicating that the observed effects are structural rather than seed-dependent.
+
 ---
 *“Intelligence as powerful and alive, yet deliberately hollow at its center — governed, observable, and stripped of its identity.”*
