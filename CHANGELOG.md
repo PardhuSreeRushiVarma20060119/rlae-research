@@ -40,7 +40,7 @@ This section tracks the scientific milestones and historical verification steps.
 | **Stage 1 (Inception)** | Baseline establishment | `1_baseline.py` | ✅ Success |
 | **Stage 2 (Sensitivity)** | Detecting 0.06 ILS "Flicker" | `Stage2_ILS_Test1.ipynb` | ✅ Proven |
 | **Stage 2 (Integrity)** | Proving Healthy 0.02 ILS | `Stage2_ILS_Test2.ipynb` | ✅ Success |
-| **Stage 3 (M1 Ready)** | Seed 1337 Logic Lock | `SFTConfig(seed=1337)` | 🚀 Ready |
+| **Stage 3: M1 Ready** | Seed 1337 Logic Lock | `SFTConfig(seed=1337)` | ✅ Verified |
 | **Stage 3 (M2 Ready)** | Metric Grounding Logic | `irreversibility_test.py --control` | 🚀 Ready |
 | **Current Objective** | Final Paper Proofs | `PaperOne_Experiment_2.ipynb` | 🏗️ Active |
 
