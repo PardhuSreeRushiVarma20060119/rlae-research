@@ -158,6 +158,9 @@ The RLAE framework is verified through independent, reproducible protocols that 
 - **Command:** `!python src/verification/robustness_suite.py`
 - **Artifact:** Generates `canonical_diagnostic_results.tar.gz`.
 
+> [!NOTE]
+> Refer Colab-Experiments/ folder for detailed understanding of latest notebook workflows and protocol descriptions.
+
 ---
 
 ## 📂 Repository Structure
