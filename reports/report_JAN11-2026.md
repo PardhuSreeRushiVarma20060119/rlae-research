@@ -60,8 +60,6 @@ All research notebooks (Cloud, StageExp, M-Series) have been aligned to a strict
 
 ## 🚀 Next Steps (Roadmap)
 
-## 🚀 Next Steps (Roadmap)
-
 ### 1. **M3: Mutation Intensity Sweep (Irreversibility is Monotonic)**
 
 *Tests whether irreversibility is structural rather than a threshold artifact.*
