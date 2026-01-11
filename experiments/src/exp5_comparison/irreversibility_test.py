@@ -167,6 +167,8 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID, is_control=False):
         clear_gpu_cache()
 
     else:
+        # NOTE: No optimizer, backward pass, or gradient updates are invoked in control mode.
+        # This ensures the adapter attachment is behaviorally inert.
         print("\n" + "="*60)
         print(" [M2 PROTOCOL]: METRIC GROUNDING MODE (BYPASSING WEIGHT MUTATIONS) ")
         print("="*60)
