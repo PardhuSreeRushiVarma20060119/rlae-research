@@ -2,12 +2,22 @@
 
 This directory serves as the repository for all outcome-level telemetry, memory statistics, and research results generated during experimental runs.
 
+## Log Structure
+
+Telemetry is organized by experimental epoch:
+
+- **`Sprint-1/`**: Initial prototyping and RLAE integration, SFT/RL operational runs.
+- **`Sprint-2/`**: Baseline Weight Mutation & RLAE Method runs.
+- **`Sprint-3/`**: **M1 Verification** (Repeatability Proof via Seed 1337).
+- **`Sprint-4/`**: **M2 Verification** (No-Op Control & Metric Grounding).
+
 ## Key Log Files
 
-- **`exp1_results.json`**: JSON-lines file containing the outcome values and samples for Experiment 1 (Baseline, SFT, RL, and Post-Reset).
-- **`exp2_results.json`**: Results from the RLAE structural elimination/thinning tests.
-- **`exp3_results.json`**: Data from the SVAR structural perturbation analysis.
-- **`stress_results.json`**: Cumulative data from iterative stress testing.
+- **`exp1_results.json`**: Outcome values for Experiment 1 (Baseline, SFT, RL, Post-Reset).
+- **`exp2_results.json`**: RLAE structural elimination analysis.
+- **`exp3_results.json`**: SVAR structural perturbation data.
+- **`exp5_comparison_results.json`**: The **Canonical Validation Log**. Contains the KL divergence and Recoverability Factor metrics used to prove M1 (Repeatability) and M2 (Grounding).
+- **`stress_results.json`**: Cumulative autonomous stress testing data.
 
 ## Telemetry Tracked
 

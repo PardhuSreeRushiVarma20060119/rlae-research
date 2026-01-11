@@ -8,13 +8,15 @@ We utilize outcome-level verification and grounding controls to prove the robust
 
 ### **1. M1: Repeatability (Outcome-Class Protocol)**
 
-- **Baseline:** Proves outcomes are structurally invariant across runs.
-- **Archive:** Uses `REVA4-Research-Lab-Cloud.zip`.
+- **Objective:** Proves outcomes are structurally invariant across independent seeds and runtimes.
+- **Evidence:** See `logs/Sprint-3/exp5_comparison_results.json`.
+- **Method:** `fixed_seed(1337)` applied to all stochastic generators.
 
 ### **2. M2: No-Op Control (Grounding)**
 
-- **Role:** Grounds our metrics (KL, RF) to define "Numerical Zero".
-- **Execution:** Skip training (C4) and run the comparison script with `--control`.
+- **Objective:** Grounds metrics (KL, RF) to define "Numerical Zero" for behavioral attachment.
+- **Evidence:** See `logs/Sprint-4/exp5_comparison_results.json`.
+- **Method:** Execution with `--control` flag to bypass weight mutation (C5) and training (C4).
 
 ---
 
