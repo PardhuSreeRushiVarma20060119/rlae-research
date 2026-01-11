@@ -1,16 +1,21 @@
-name: Build PaperOne PDF
+name: Build and Deploy PaperOne
 
 on:
     push:
         paths:
             - "Papers/P1/LaTeX/**"
 
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
 jobs:
-    build-paper:
+    build:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout repository
+            - name: Checkout
               uses: actions/checkout@v4
 
             - name: Compile LaTeX
@@ -19,13 +24,24 @@ jobs:
                   working_directory: Papers/P1/LaTeX
                   root_file: PaperOne.tex
 
-            - name: Prepare Pages directory
+            - name: Prepare Pages content
               run: |
                   mkdir -p public
                   cp Papers/P1/LaTeX/PaperOne.pdf public/
 
-            - name: Deploy to GitHub Pages
-              uses: peaceiris/actions-gh-pages@v4
+            - name: Upload Pages artifact
+              uses: actions/upload-pages-artifact@v3
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_dir: public
+                  path: public
+
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
