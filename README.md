@@ -79,30 +79,47 @@ https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Rep
 
 ---
 
-## 🧪 Experimental Lifecycle
+## 🧪 Mandatory Validation Experiments (M-Series)
 
-### **Phase 1: Environment Setup**
+To ensure scientific rigor and repeatability, all RLAE evaluations must pass the following validation suite:
 
-```bash
-!unzip research.zip
-%cd experiments
-!pip install -q -r requirements.txt
-```
+- **M1 — Repeatability Run:** Verification of deterministic outcomes using a locked global seed (`1337`). Ensures that results are a property of the architecture, not stochastic noise.
+- **M2 — No-Op Control:** Metric grounding run using the `--control` flag. Confirms that mounting and immediately unmounting an *un-trained* adapter yields `KL ≈ 0` and `RF = 100%`.
+- **M3 — Intensity Sweep:** Evaluation of recoverability across increasing mutation magnitudes (ε-scaling).
+- **M4 — Multi-Model Path:** Cross-verification of structural invariance on different base model scales.
+- **M5 — Metric Grounding:** Direct correlation analysis between ILS, KL, and standard perplexity (PPL).
 
-### **Phase 2: Establish Invariance Lifecycle**
+---
 
-1. **Baseline Run:** `!python src/exp1_reset/1_baseline.py`
-2. **SFT Training:** `!python src/exp1_reset/2_train_sft.py`
-3. **RL Alignment:** `!python src/exp1_reset/3_train_rl.py`
-4. **Reset Verification:** `!python src/exp1_reset/4_verify_reset.py`
+## 🚀 Cloud Execution Guide (Google Colab)
 
-### **Phase 3: Robustness Diagnostics**
+### 🛠️ Infrastructure & Environment
 
-1. **Behavioral Elimination:** `!python src/exp2_rlae/elimination_test.py`
-2. **SVAR Perturbation:** `!python src/exp3_svar/perturbation.py`
-3. **Runtime Stress Test:** `!python src/exp4_stress/stress_single_run.py`
-4. **Comparative Proof:** `!python src/exp5_comparison/irreversibility_test.py`
-5. **Unified Report:** `!python src/verification/robustness_suite.py`
+- **Platform:** Google Colab (T4/L4 GPU)
+- **Archive:** `REVA4-Research-Lab-Cloud.zip` (Contains pre-configured seed locking and control flags)
+
+### **Experimental Lifecycle (Steps 1-5)**
+
+1. **Step 1: Environment & Setup**
+
+   ```bash
+   !unzip REVA4-Research-Lab-Cloud.zip
+   !pip install -q -r experiments/requirements.txt
+   ```
+
+2. **Step 2: Seed & Determinism (C1)**  
+   Verify global seed `1337` is active to lock the structural verification pipeline.
+
+3. **Step 3: Base Identity (C2/C3)**  
+   Load the **Qwen2.5-3B-Instruct** foundation and establish the "Identity Zero" state.
+
+4. **Step 4: Adapter Development (C4)**  
+   Train the swappable behavioral layer (SFT/RL) without touching the frozen core.
+
+5. **Step 5: Structural Proof (C5-C8)**  
+   Execute the comparative analysis using `irreversibility_test.py`:
+   - **M1 Run:** `!python src/exp5_comparison/irreversibility_test.py`
+   - **M2 Run:** `!python src/exp5_comparison/irreversibility_test.py --control`
 
 ---
 
