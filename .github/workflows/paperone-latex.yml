@@ -26,10 +26,11 @@ jobs:
 
             - name: Prepare Pages content
               run: |
-                  mkdir -p public
-                  cp index.html public/
-                  cp Papers/P1/LaTeX/PaperOne.pdf public/
-                  cp -r arts public/
+                  rm -rf public
+                  mkdir public
+                  cp index.html public/index.html
+                  cp Papers/P1/LaTeX/PaperOne.pdf public/PaperOne.pdf
+                  cp -r arts public/arts
 
             - name: Upload Pages artifact
               uses: actions/upload-pages-artifact@v3
