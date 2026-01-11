@@ -29,6 +29,7 @@ jobs:
                   mkdir -p public
                   cp index.html public/
                   cp Papers/P1/LaTeX/PaperOne.pdf public/
+                  cp -r arts public/
 
             - name: Upload Pages artifact
               uses: actions/upload-pages-artifact@v3
