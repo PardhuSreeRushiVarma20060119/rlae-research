@@ -141,6 +141,9 @@ To ensure scientific rigor and repeatability, all RLAE evaluations must pass the
 > [!NOTE]
 > This repository is designed for **repeatable research**. All experiments are logged with timestamps and hardware telemetry to ensure outcome-level consistency across different CUDA environments.
 
+> [!IMPORTANT]
+> **Cloud Setup:** Always unzip `REVA4-Research-Lab-Cloud.zip` to ensure you are using the latest standardized training and comparison logic.
+
 ![Status](https://img.shields.io/badge/STATUS-READY-darkgreen?style=for-the-badge&logo=checkmarx)
 ![Hardened](https://img.shields.io/badge/HARDENED-YES-darkblue?style=for-the-badge&logo=shield)
 ![Robustness](https://img.shields.io/badge/ROBUSTNESS-ADVANCED-darkred?style=for-the-badge&logo=target)
