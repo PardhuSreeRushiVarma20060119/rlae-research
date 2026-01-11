@@ -22,10 +22,21 @@ We utilize outcome-level verification and grounding controls to prove the robust
 
 ## 📂 Repository Contents
 
-- **`PaperOne_Experiment_1.ipynb`**: The primary research notebook for Step-by-Step validation.
-- **`Stage1_Experiments.ipynb`**: Initial environment mounting (SFT & RL Alignment).
-- **`Stage2_ILS_Experiment_Test1.ipynb`**: Diagnostic sensitivity test (Detecting noise envelopes).
-- **`Stage2_ILS_Experiment_Test2.ipynb`**: Identity integrity verification (Proving clean unmounting).
+### **1. M-Series (Canonical Verification)**
+
+Located in `M-Series/`, these notebooks represent the finalized proofs for the paper.
+
+- **`PaperOne_M0Experiment.ipynb`**: Foundational Baseline Weight Mutation & RLAE Method runs.
+- **`PaperOne_M1Experiment.ipynb`**: **M1 (Repeatability)** verification. Proves structural invariance via `seed=1337`.
+- **`PaperOne_M2Experiment.ipynb`**: **M2 (Grounding)** verification. Proves the "Identity Zero" baseline using the `--control` no-op execution.
+
+### **2. StageExp (Developmental Validation)**
+
+Located in `StageExp/`, these notebooks track the incremental development of the RLAE protocols.
+
+- **`Stage1_Experiments.ipynb`**: Initial SFT & RL alignment environment mounting.
+- **`Stage2_ILS_Experiment_Test1.ipynb`**: Diagnostic sensitivity testing and noise envelope detection.
+- **`Stage2_ILS_Experiment_Test2.ipynb`**: Identity integrity verification and clean unmounting proofs.
 
 ## 🔬 Key Theorems Proven
 
