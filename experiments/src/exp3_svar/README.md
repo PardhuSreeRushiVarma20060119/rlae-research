@@ -1,11 +1,13 @@
 # 🌀 Experiment 3: SVAR (Structural Variance Analysis)
 
-This phase applies adversarial stressors directly to the behavioral structure to test stability envelopes.
+This phase applies structural boundary tests directly to the behavioral manifold to evaluate outcome-level repeatability margins.
 
-## Perturbation Types
+## Perturbation Protocols
+
 - **Weight Decay**: ε-bounded reduction of adapter influence.
-- **Noise Injection**: Adding structural Gaussian noise to LoRA ranks.
-- **Adversarial Stress**: Targeting transformer middle layers to detect hidden behavioral coupling.
+- **Structural Gaussian Injection**: Inducing variance into LoRA ranks for sensitivity analysis.
+- **Adversarial Latent Stress**: Probing intermediary structural latents to quantify structural covariance.
 
 ## Key Script
-- **`perturbation.py`**: Orchestrates structural stressors and logs the resulting variance.
+
+- **`perturbation.py`**: Orchestrates structural stressors and logs the resulting outcome-level variance.

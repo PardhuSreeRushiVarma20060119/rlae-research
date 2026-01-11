@@ -1,11 +1,13 @@
-# 🛡️ Verification Suite
+# 🛡️ Canonical Validation Suite
 
-The final layer of the repository's robustness framework.
+The canonical layer of the repository's robustness framework.
 
 ## Key Script
-- **`robustness_suite.py`**: A unified script that loads results from all three experiments (Reset, RLAE Core, and SVAR) to generate a "Unified Robustness Report."
 
-## Verification Pass Criteria
-- **Exp 1**: ILS < 0.05
-- **Exp 2**: Stable gradient of behavior collapse vs weight magnitude.
-- **Exp 3**: Output variance within ε-bounded stability envelopes.
+- **`robustness_suite.py`**: A unified script that loads results from all experimental phases (Structural Invariance, Structural Elimination, and SVAR) to generate a "Canonical Robustness Report."
+
+## Validation Pass Criteria
+
+- **Exp 1 (Invariance)**: ILS < 0.05
+- **Exp 2 (Elimination)**: Stable gradient of structural collapse vs weight magnitude.
+- **Exp 3 (SVAR)**: Outcome variance within ε-bounded stability margins.

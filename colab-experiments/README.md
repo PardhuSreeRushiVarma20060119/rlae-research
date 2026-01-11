@@ -4,11 +4,11 @@ This directory contains standalone, staged notebooks designed for interactive re
 
 ## 🚀 Multi-Test Analysis & Validation (M-Series)
 
-We utilize deterministic seed-locking and control flags to prove the robustness of the RLAE & SVAR framework.
+We utilize outcome-level verification and grounding controls to prove the robustness of the RLAE & SVAR framework.
 
-### **1. M1: Repeatability (Seed 1337)**
+### **1. M1: Repeatability (Outcome-Class Protocol)**
 
-- **Baseline:** Proves structural properties are non-stochastic.
+- **Baseline:** Proves outcomes are structurally invariant across runs.
 - **Archive:** Uses `REVA4-Research-Lab-Cloud.zip`.
 
 ### **2. M2: No-Op Control (Grounding)**
@@ -27,11 +27,11 @@ We utilize deterministic seed-locking and control flags to prove the robustness 
 
 ## 🔬 Key Theorems Proven
 
-1. **Structural Invariance:** The Base Model remains identical before/after training.
+1. **Structural Invariance:** The Base Model remains structurally consistent before/after training.
 2. **Modular Efficiency:** Complex behavioral shifts achieved via **0.05% parameter modification**.
 3. **Metric Grounding:** The M2 control run anchors all subsequent KL/RF measurements.
 
 ---
 
 > [!IMPORTANT]
-> **Cloud Setup:** Always unzip `REVA4-Research-Lab-Cloud.zip` to ensure you are using the latest seed-locked training and comparison logic.
+> **Cloud Setup:** Always unzip `REVA4-Research-Lab-Cloud.zip` to ensure you are using the latest standardized training and comparison logic.

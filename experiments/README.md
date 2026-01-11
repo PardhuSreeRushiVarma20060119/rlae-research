@@ -37,8 +37,8 @@ This repository implements the canonical paradigms of **RLAE (Runtime Low‑Rank
 
 - **Frozen Core Invariance:** The base model remains strictly immutable.
 - **Behavioral Environments:** RL updates are isolated within swappable LoRA units.
-- **Runtime Governance:** Dynamic behavioral composition and emergency reversibility (Kill-switch).
-- **Identity Leakage Detection:** Diagnostic suite to ensure zero residual learning after environment unmounting.
+- **Runtime Governance:** Dynamic behavioral composition and structural behavioral elimination (kill-switch protocol).
+- **Structural Residue Detection:** Diagnostic suite to ensure numerical consistency within measured precision after environment unmounting.
 
 ## Prerequisites
 
@@ -51,19 +51,17 @@ This repository implements the canonical paradigms of **RLAE (Runtime Low‑Rank
 
 ## Repository Structure
 
-- `src/exp1_reset/`: **Reset Integrity Validation** (Detection of Identity Leakage).
-- `src/exp2_rlae/`: **Behavioral Elimination** (Kill-switch and Robustness proof).
-- `src/exp3_svar/`: **Stability Envelopes** (Sensitivity Analysis).
+- `src/exp1_reset/`: **Structural Invariance Validation** (Verification of outcome-level consistency).
+- `src/exp2_rlae/`: **Structural Elimination** (Reversibility and Robustness proof).
+- `src/exp3_svar/`: **Structural Sensitivity Analysis** (Stability analysis).
 - `src/exp4_stress/`: **Runtime Reliability** (Stress Testing).
 - `src/utils/browser_app.py`: **Runtime Governance Interface** (Interactive Dashboard).
 
-## 🧪 Validation Experiments (M-Series)
-
-To ensure scientific rigor, all evaluations follow a strict deterministic protocol:
+To ensure scientific rigor, all evaluations follow a strict repeatability protocol:
 
 ### **M1 — Repeatability (Seed 1337)**
 
-All training and comparison scripts are locked to global seed `1337`.  
+All training and comparison scripts follow a standardized outcome-level protocol (global seed `1337`).  
 Run the full lifecycle: `C0 → C1 → ... → C8`.
 
 ### **M2 — No-Op Control (Grounding)**
@@ -84,7 +82,7 @@ Metric grounding to define "Numerical Zero" for KL and RF.
 !pip install -q gradio psutil
 ```
 
-### Phase 2: Behavioral Lifecycle (M1 Preparation)
+### Phase 2: Behavioral Lifecycle (Repeatability Baseline)
 
 1. **Establish Frozen Core:** `!python src/exp1_reset/1_baseline.py`
 2. **Mount & Train Environment:**
