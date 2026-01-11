@@ -6,7 +6,7 @@
 
 This repository is a technically rigorous research environment dedicated to the development and evaluation of **Runtime Low-Rank Adaptive Environments (RLAE)** and **Structural Variance Analysis for Robustness (SVAR)**.
 
-Our mission is to move AI alignment from **hidden weight mutation** to a **runtime-governed, verifiable behavioral paradigm**, where intelligence is modular, reversible, and mathematically provable.
+Our mission is to move AI alignment from **hidden weight mutation** to a **runtime-governed, verifiable behavioral paradigm**, where intelligence is modular, reversible, and formally verifiable.
 
 ---
 
@@ -37,7 +37,7 @@ Key capabilities:
 
 - **Identity Leakage Score (ILS):** A fused metric tracking structural drift with high precision.
 - **Stability Envelopes:** Measuring behavioral resilience under ε-bounded perturbations.
-- **Reset Integrity Verification:** Ensuring post-reset behavior is statistically identical to baseline.
+- **Reset Integrity Verification:** Ensuring post-reset behavior is statistically consistent with baseline.
 
 SVAR evaluates what breaks when structure is stressed—safely and deliberately.
 
@@ -83,7 +83,7 @@ https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Rep
 
 To ensure scientific rigor and repeatability, all RLAE evaluations must pass the following validation suite:
 
-- **M1 — Repeatability Run:** Verification of deterministic outcomes using a locked global seed (`1337`). Ensures that results are a property of the architecture, not stochastic noise.
+- **M1 — Repeatability Run:** Verification of repeatable outcomes using a standardized global seed (`1337`). Ensures that results are a property of the architecture, independent of stochastic initial states.
 - **M2 — No-Op Control:** Metric grounding run using the `--control` flag. Confirms that mounting and immediately unmounting an *un-trained* adapter yields `KL ≈ 0` and `RF = 100%`.
 - **M3 — Intensity Sweep:** Evaluation of recoverability across increasing mutation magnitudes (ε-scaling).
 - **M4 — Multi-Model Path:** Cross-verification of structural invariance on different base model scales.
@@ -107,8 +107,8 @@ To ensure scientific rigor and repeatability, all RLAE evaluations must pass the
    !pip install -q -r experiments/requirements.txt
    ```
 
-2. **Step 2: Seed & Determinism (C1)**  
-   Verify global seed `1337` is active to lock the structural verification pipeline.
+2. **Step 2: Seed & Repeatability (C1)**  
+   Verify global seed `1337` is active to stabilize the structural verification pipeline.
 
 3. **Step 3: Base Identity (C2/C3)**  
    Load the **Qwen2.5-3B-Instruct** foundation and establish the "Identity Zero" state.
@@ -139,7 +139,7 @@ To ensure scientific rigor and repeatability, all RLAE evaluations must pass the
 ```
 
 > [!NOTE]
-> This repository is designed for **deterministic research**. All experiments are logged with timestamps and hardware telemetry to ensure reproducibility across different CUDA environments.
+> This repository is designed for **repeatable research**. All experiments are logged with timestamps and hardware telemetry to ensure outcome-level consistency across different CUDA environments.
 
 ![Status](https://img.shields.io/badge/STATUS-READY-darkgreen?style=for-the-badge&logo=checkmarx)
 ![Hardened](https://img.shields.io/badge/HARDENED-YES-darkblue?style=for-the-badge&logo=shield)

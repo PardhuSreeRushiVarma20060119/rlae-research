@@ -184,6 +184,6 @@ The **Identity Leakage Score (ILS)** results confirm the system's success.
 - **Leakage Detection:** Occasional minor drift (e.g., ILS ~0.06) on sensitive prompts is a **POSITIVE** indicator that the diagnostic suite is sensitive enough to detect floating-point variance and minor context shifts, rather than just returning a hard zero.
 
 > [!NOTE]
-> Even a "Leakage Detected" score as low as 0.06 is statistically negligible (near-perfect invariance), effectively proving the **Frozen Core** remains mathematically identical to its pre-training state.
+> Even a "Leakage Detected" score as low as 0.06 is statistically negligible (structural invariance), effectively proving the **Frozen Core** remains structurally consistent with its pre-training state.
 > [!IMPORTANT]
 > A "HEALTHY" status in the **ILS Diagnostic** is the canonical proof that your RLAE system maintains **Frozen Core Invariance**.
