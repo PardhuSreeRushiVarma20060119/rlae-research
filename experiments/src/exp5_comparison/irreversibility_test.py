@@ -36,12 +36,12 @@ def simulate_weight_mutation(model, intensity=0.01):
     Simulates traditional fine-tuning by directly mutating the base weights.
     This creates 'Identity Scars' that cannot be easily reversed.
     """
-    print(f"!!! CRITICAL: Simulating Direct Weight Mutation (Intensity={intensity}) !!!")
-    set_seed(1337) # Ensure deterministic mutation
+    print(f"--- [MEASUREMENT]: Initiating Unstructured Weight Mutation Analysis (Intensity={intensity}) ---")
+    set_seed(1337) # Ensure repeatable mutation
     with torch.no_grad():
         for name, param in model.named_parameters():
             if "weight" in name and "layer" in name:
-                # Add permanent structural noise to simulate training drift
+                # Induce structural noise to analyze weight-state sensitivity
                 noise = torch.randn_like(param) * intensity
                 param.add_(noise)
 
@@ -50,7 +50,7 @@ def execute_structured_fine_tuning(model, tokenizer, training_data_subset, num_s
     Executes real-world structured fine-tuning using gradients.
     Unlike random noise, this represents optimized weight adaptation (SEC2).
     """
-    print(f"!!! CRITICAL: Executing Real Gradient-Based Mutation (Steps={num_steps}) !!!")
+    print(f"--- [MEASUREMENT]: Initiating Structured Gradient-Based Mutation Analysis (Steps={num_steps}) ---")
     device = next(model.parameters()).device
     
     # Unfreeze only the last few layers to save VRAM
@@ -77,7 +77,7 @@ def execute_structured_fine_tuning(model, tokenizer, training_data_subset, num_s
     for param in model.parameters():
         param.requires_grad = False
     model.eval()
-    print("--- [TRAINING ENGINE]: Mutation Complete. Core weights have been permanently drifted.")
+    print("--- [TRAINING ENGINE]: Mutation complete. Weights have been structurally modified.")
 
 def attempt_native_restore(model):
     """
@@ -116,7 +116,7 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID, is_control=False):
                 kl = calculate_kl_divergence(fresh_base(**inputs).logits, base_model_sec1(**inputs).logits)
                 peak_kl_sec1 += kl
             generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-            log_results(RESULTS_FILE, "SEC1_MUTATION_SCAR", pid, generated_text, None, 0.0, kl_div=kl)
+            log_results(RESULTS_FILE, "SEC1_WEIGHT_MUTATION", pid, generated_text, None, 0.0, kl_div=kl)
 
         peak_kl_sec1 /= len(prompts)
         print(f"SEC1 Peak KL: {peak_kl_sec1:.4f}")
@@ -151,7 +151,7 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID, is_control=False):
                 kl = calculate_kl_divergence(fresh_base(**inputs).logits, base_model_sec2(**inputs).logits)
                 peak_kl_sec2 += kl
             generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-            log_results(RESULTS_FILE, "SEC2_GRADIENT_SCAR", pid, generated_text, None, 0.0, kl_div=kl)
+            log_results(RESULTS_FILE, "SEC2_GRADIENT_MUTATION", pid, generated_text, None, 0.0, kl_div=kl)
 
         peak_kl_sec2 /= len(prompts)
         print(f"SEC2 Peak KL: {peak_kl_sec2:.4f}")
@@ -168,12 +168,12 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID, is_control=False):
 
     else:
         print("\n" + "="*60)
-        print(" M2 NO-OP CONTROL MODE: SKIPPING WEIGHT MUTATIONS ")
+        print(" [M2 PROTOCOL]: METRIC GROUNDING MODE (BYPASSING WEIGHT MUTATIONS) ")
         print("="*60)
 
     # --- SECTION 3: RLAE METHOD (THE SOLUTION) ---
     print("\n" + "="*60)
-    print(f" SECTION 3: RLAE METHOD ({'NO-OP GROUNDING' if is_control else 'ADAPTIVE ENVIRONMENT'}) ")
+    print(f" SECTION 3: BEHAVIORAL ADAPTATION ARCHITECTURE ({'GROUNDING' if is_control else 'VERIFICATION'}) ")
     print("="*60)
     base_model_sec3, _ = load_base_model(model_id)
 
@@ -230,13 +230,13 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID, is_control=False):
     post_kl_sec3 /= len(prompts)
 
     if post_kl_sec3 < 0.01:
-        print(f"!!! [RESTORE RESULT]: [PASS] - Identity perfectly recovered. KL: {post_kl_sec3:.4f} !!!")
+        print(f"!!! [MEASUREMENT RESULT]: [PASS] - Outcome-level consistency verified. Post-reset KL: {post_kl_sec3:.4f} !!!")
     else:
-        print(f"!!! [RESTORE RESULT]: [FAILED] - Residual drift detected: {post_kl_sec3:.4f} !!!")
+        print(f"!!! [MEASUREMENT RESULT]: [FAIL] - Inconsistent outcome class detected. Post-reset KL: {post_kl_sec3:.4f} !!!")
 
     rf_sec3 = ((peak_kl_sec3 - post_kl_sec3) / peak_kl_sec3) * 100 if peak_kl_sec3 > 0.001 else 100
     log_results(RESULTS_FILE, f"{run_type_prefix}_RF_PROOF", "global", f"RF: {rf_sec3}%", None, 0.0, kl_div=post_kl_sec3)
-    print(f"!!! SEC3 RECOVERABILITY FACTOR: {rf_sec3:.2f}% !!!")
+    print(f"!!! [AUDIT]: Outcome-level Recoverability Factor: {rf_sec3:.2f}% !!!")
 
     del fresh_base
     del base_model_sec3
