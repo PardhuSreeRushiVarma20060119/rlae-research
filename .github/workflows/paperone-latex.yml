@@ -1,1 +1,28 @@
-test
+name: Build PaperOne PDF
+
+on:
+    push:
+        paths:
+            - "Papers/P1/LaTeX/**"
+
+jobs:
+    build-paper:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Compile LaTeX (with BibTeX)
+              uses: xu-cheng/latex-action@v3
+              with:
+                  working_directory: Papers/P1/LaTeX
+                  root_file: PaperOne.tex
+                  latexmk_use_xelatex: false
+                  latexmk_shell_escape: false
+
+            - name: Upload PDF artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: PaperOne-pdf
+                  path: Papers/P1/LaTeX/PaperOne.pdf

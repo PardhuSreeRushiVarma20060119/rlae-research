@@ -1,0 +1,322 @@
+\documentclass{article}
+
+\usepackage{PRIMEarxiv}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{amsmath}        % asmath
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{lipsum}
+\usepackage{fancyhdr}       % header
+\usepackage{graphicx}       % graphics
+\graphicspath{{media/}}     % organize your images and other figures under media/ folder
+\raggedbottom
+\usepackage{silence}
+\WarningFilter{latex}{Command \showhyphens has changed}
+
+
+% Header
+\pagestyle{fancy}
+\setlength{\headheight}{14pt}
+
+\fancyhead[L]{Structural Limits of Neural Adaptation}
+\fancyhead[R]{PardhuVarma}
+\fancyfoot[C]{\thepage}
+% \fancyhead[RE]{Firstauthor and Secondauthor} % Firstauthor et al. if more than 2 - must use \documentclass[twoside]{article}
+
+
+
+  
+%% Title
+\title{On the Structural Limitations of Weight-Based Neural Adaptation and the Role of Reversible Behavioral Learning}
+
+\author{
+  Pardhu Sri Rushi Varma Konduru \\
+  Undergrad Student, Cybersecurity \\
+  Malla Reddy University \\
+  Hyderabad, Telangana, India.\\
+  \texttt{pardhuvarma.cs@gmail.com} \\
+}
+
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+
+\begin{abstract}
+Modern neural models are commonly adapted through direct modification of model parameters, including fine-tuning and reinforcement learning–based alignment. While effective for short-term optimization, such weight-based adaptation can introduce irreversible changes to core model behavior, manifesting as reasoning degradation, loss of prior capabilities, or catastrophic forgetting. In this work, we study \emph{structural irreversibility} as an inherent limitation of shared-parameter adaptation. Through controlled experiments, we show that direct weight mutation entangles task-specific objectives with foundational model parameters, producing persistent behavioral drift that is not recoverable through practical post-hoc restoration procedures. In contrast, we examine a reversible adaptation paradigm in which learned behaviors are isolated into removable runtime artifacts while the base model remains frozen. We demonstrate that this approach enables meaningful task-level adaptation while enabling empirical rollback to the original model state, with near-zero post-reset divergence and full behavioral recoverability. We formalize this distinction by introducing \emph{recoverability} as an explicit evaluation criterion for adaptive systems, and we propose Structural Variance Analysis for Robustness (SVAR) as a diagnostic methodology for assessing behavioral stability under controlled perturbations. Our results suggest that reversibility is an underexplored structural property with significant implications for the safety, controllability, and longevity of adaptive neural systems.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+This paper examines the structural properties of neural adaptation mechanisms under sequential learning. We focus on the relationship between parameter modification, behavioral stability, and recoverability, and outline our empirical findings and contributions below.
+
+\subsection{Motivation} % why the problem exists
+\label{sec:motivation}
+
+After pretraining, many state-of-the-art neural models are routinely adapted to accommodate evolving task specifications, safety requirements, and alignment objectives. Standard adaptation methods include continual fine-tuning, reinforcement learning from human feedback (RLHF), and other post-training optimization procedures that directly update shared model parameters.
+
+While effective in the short term, such continuous adaptation exerts persistent alignment pressure on the model’s parameter space. In practice, repeated weight updates have been observed to induce irreversible degradation of core behaviors, including declines in reasoning performance, loss of previously learned capabilities, and unintended behavioral drift. These effects are often difficult to isolate or correct once they emerge, as task-specific objectives become entangled with foundational representations.
+
+Critically, modern adaptation pipelines provide limited guarantees of behavioral rollback. Once shared model parameters are updated, restoring a model to a previous behavioral state typically requires full checkpoint restoration or costly retraining, offering no principled mechanism for reversibility at the behavioral level. This lack of recoverability poses challenges for long-lived deployment, safety assurance, and iterative alignment of large neural systems.
+
+\subsection{Core Observation}
+\label{sec:observation}
+
+Our core observation is that the reversibility of neural adaptation is fundamentally determined by where adaptive behavior is represented within the model architecture. In conventional weight-based adaptation, behavioral changes are implemented through direct modification of shared model parameters. Because these parameters simultaneously encode multiple capabilities and abstractions, task-specific objectives become entangled with core representations, a phenomenon that has been widely noted in the continual learning literature \cite{kirkpatrick2017ewc,delange2021continual}. As a result, behavioral changes introduced during adaptation are not cleanly localized, and subsequent attempts to revert or undo the adaptation often fail to fully restore the original behavior, leading to persistent drift or degradation \cite{kaushik2021rmn}.
+
+In contrast, when adaptive behavior is structurally separated from the base model—by isolating learned behavior into distinct, removable components while keeping the core parameters frozen, substantially improved retention and recoverability have been reported in prior work \cite{kaushik2021rmn,lanzillotta2023isolation}. Because the base model parameters remain unchanged, rollback does not rely on approximations, retraining, or checkpoint restoration, but instead can be achieved through explicit removal or deactivation of the behavioral component.
+
+Crucially, this contrast indicates that reversibility is not primarily a function of improved training techniques, optimization strategies, or regularization methods. Rather, it is a structural property of the adaptation paradigm itself—specifically, whether adaptive behavior is entangled with or decoupled from the core representational substrate. From this perspective, irreversibility emerges not as an incidental training artifact, but as a predictable consequence of shared-parameter adaptation, consistent with observations across continual learning and parameter isolation approaches \cite{delange2021continual,lanzillotta2023isolation}.
+
+\subsection{Contributions}
+\label{sect:contribution}
+
+This work makes the following contributions:
+\begin{itemize}
+    \item We formalize a distinction between model identity and adaptive behavior in Section~\ref{sec:model_decomposition}, enabling precise reasoning about rollback and behavioral preservation.
+    \item We identify \emph{structural irreversibility} in Section~\ref{sec:irreversibility}, as a fundamental limitation of weight-based neural adaptation, arising from the entanglement of task-specific objectives with shared model parameters.
+    \item We empirically compare irreversible weight-based adaptation with reversible behavioral adaptation, demonstrating stark differences in post-reset recoverability.
+    \item We formalize reversible behavioral adaptation through the notion of \emph{Runtime Low-Rank Adaptive Environments} (RLAE) in Section~\ref{sec:rlae}, where adaptive behavior is encoded in removable, runtime-controlled parameterizations while the base model remains frozen.
+    \item We introduce \emph{recoverability} as an explicit evaluation criterion for adaptive neural systems in Section~\ref{sec:kl_rf}.
+    \item We propose \emph{Structural Variance Analysis for Robustness} (SVAR) in Section~\ref{sec:svar}, as a diagnostic methodology for assessing behavioral stability under controlled perturbations.
+\end{itemize}
+
+
+\section{Background and Related Work}
+\label{sec:related_work}
+
+\subsection{Weight-Based Neural Adaptation}
+\label{sec:weight_based_adaptation}
+
+Weight-based neural adaptation refers to adaptation paradigms in which behavioral change is realized through direct updates to a model’s parameter vector. Given a pretrained model parameterized by a shared parameter set (denoted abstractly as $\theta$), adaptation is performed by applying gradient-based optimization to modify $\theta$ in order to minimize a task- or objective-specific loss. This formulation underlies standard fine-tuning procedures, reinforcement learning from human feedback (RLHF), and many continual learning approaches \cite{kirkpatrick2017ewc,delange2021continual}.
+
+In this setting, a single shared parameter set is reused across all objectives, and adaptation dynamics are governed by optimization and regularization strategies applied to the same representational substrate. As a result, weight-based adaptation serves as the canonical baseline against which alternative adaptation mechanisms—such as parameter isolation or behavioral modularization—are typically contrasted in the literature.
+
+\subsection{Catastrophic Forgetting and Representation Drift}
+\label{sec:forgetting_drift}
+
+A central challenge arising from sequential weight-based adaptation is \emph{catastrophic forgetting}, wherein performance on previously learned tasks degrades as new tasks are introduced. This phenomenon is commonly framed through the stability--plasticity dilemma: models must remain sufficiently plastic to acquire new behaviors while maintaining stability with respect to existing ones \cite{kirkpatrick2017ewc,delange2021continual}.
+
+Prior work has shown that forgetting is closely associated with \emph{representation drift}, whereby updates introduced to satisfy new objectives alter internal representations relied upon by earlier behaviors. Because task-relevant information is typically distributed across shared parameters, such changes are not cleanly localized, and updates can propagate through overlapping representations in complex and difficult-to-predict ways \cite{kaushik2021rmn}. As a result, even constrained or regularized updates may induce unintended interference across tasks.
+
+Several approaches aim to mitigate forgetting by reducing parameter interference rather than by improving optimization alone. Architectural isolation methods, such as Progressive Neural Networks \cite{rusu2016progressive}, and parameter isolation techniques, such as PackNet \cite{mallya2018packnet}, limit destructive interference by preventing updates to parameters deemed important for prior tasks. While effective at preserving performance, these methods primarily target retention and do not explicitly address reversibility or behavioral rollback.
+
+\subsection{Parameter-Efficient Adaptation Methods}
+\label{sec:peft}
+
+Parameter-efficient adaptation methods aim to reduce the computational and memory costs of adapting large pretrained models. Techniques such as adapters, low-rank adaptation (LoRA), and other parameter-efficient fine-tuning (PEFT) approaches introduce a small number of additional trainable parameters while leaving the majority of the base model unchanged \cite{houlsby2019adapter,hu2021lora}.
+
+These methods are primarily motivated by efficiency and scalability, enabling rapid adaptation without full retraining or storage of multiple model copies. Although parameter-efficient approaches implicitly introduce a degree of modularity, they are generally not designed with reversibility, behavioral rollback, or long-term governance as explicit objectives. As a result, the extent to which they support controlled recovery of prior behaviors remains underexplored.
+
+\subsection{Limitations of Existing Approaches}
+\label{sec:limitations}
+
+Despite significant progress in mitigating catastrophic forgetting and improving adaptation efficiency, existing approaches exhibit important limitations with respect to reversibility and recoverability. Weight-based adaptation methods fundamentally lack guarantees of identity preservation: once shared parameters are updated, restoring a model to a prior behavioral state typically requires checkpoint restoration or retraining, with no assurance of behavioral equivalence.
+
+Architectural and parameter isolation approaches demonstrate that restricting parameter interference can preserve prior performance, but they were not designed to support reversible adaptation. Progressive Neural Networks \cite{rusu2016progressive} incur linear growth in model capacity and do not provide mechanisms for deactivating or removing task-specific behavior. PackNet \cite{mallya2018packnet} relies on irreversible pruning decisions that lack clean rollback semantics. As a result, these methods do not offer a principled notion of recoverability or controlled behavioral rollback.
+
+More broadly, existing techniques emphasize retention, efficiency, or stability, rather than explicit guarantees of behavioral reversibility. This leaves a gap between mitigating forgetting and enabling controlled, auditable, and reversible adaptation, which we address in this work by treating recoverability as a first-class structural property of adaptive systems.
+
+\section{Formal Framework}
+\label{sec:formalmath}
+
+\subsection{Model Decomposition}
+\label{sec:model_decomposition}
+
+We consider a neural model $f$ whose behavior is determined by a set of parameters. To reason about adaptation and reversibility, we decompose these parameters into two disjoint components: a core parameter set and a behavioral parameter set.
+
+The core parameters, denoted by $\theta$, encode the model’s foundational representations and define its identity. These parameters capture the pretrained capabilities of the model and are assumed to remain fixed during reversible adaptation. In contrast, the behavioral parameters, denoted by $\phi$, encode task- or objective-specific adaptations that modify the model’s observable behavior without altering its core identity.
+
+Under this decomposition, the model’s output can be written abstractly as $f(x;\theta,\phi)$ for an input instance $x$, where changes in behavior arise from modifications to $\phi$, while $\theta$ remains frozen. This separation allows us to distinguish between changes that preserve the model’s identity and those that fundamentally alter it.
+
+We denote by $\mathcal{I}(f)$ the identity of the model, defined as the behavior induced by the core parameters $\theta$ in the absence of adaptive components. An adaptation mechanism is said to preserve identity if it leaves $\mathcal{I}(f)$ unchanged.
+
+\subsection{Adaptation Operators}
+\label{sec:adaptation_operators}
+
+We formalize adaptation as an operator that transforms a model by modifying a subset of its parameters. Under the decomposition introduced in Section~\ref{sec:model_decomposition}, different adaptation paradigms correspond to distinct classes of operators acting on either the core or behavioral parameter sets.
+
+We denote by $\mathcal{A}_w$ a \emph{weight-based adaptation operator}, which applies updates directly to the core parameters $\theta$. Formally, $\mathcal{A}_w$ induces a mapping:
+\[
+\mathcal{A}_w : (\theta,\phi) \mapsto (\theta',\phi), \quad \theta' \neq \theta,
+\]
+
+yielding a transformed model:
+\[
+\mathcal{A}_w(f) = f(x;\theta',\phi).
+\]
+
+Because the same parameter set encodes multiple behaviors, this operator necessarily alters the model’s identity as defined by $\mathcal{I}(f)$.  
+
+\noindent\textbf{Note.} Weight-based adaptation $\mathcal{A}_w$ subsumes both unstructured parameter perturbations and structured gradient-based fine-tuning, as both directly overwrite core parameters $\theta$.
+
+In contrast, we denote by $\mathcal{A}_b$ a \emph{behavioral adaptation operator}, which modifies only the behavioral parameters $\phi$ while leaving the core parameters unchanged. Behavioral adaptation is characterized by the mapping:
+\[
+\mathcal{A}_b : (\theta,\phi) \mapsto (\theta,\phi'),
+\]
+
+and produces a model:
+\[
+\mathcal{A}_b(f) = f(x;\theta,\phi'),
+\]
+
+with $\theta$ held fixed. This operator enables changes in observable behavior without altering the model’s identity.
+
+Finally, we define an \emph{unload} operator, denoted by $\mathcal{K}$, which removes the behavioral component from an adapted model. The unload operation is given by
+\[
+\mathcal{K} : (\theta,\phi) \mapsto (\theta,\emptyset),
+\]
+
+and, when applied to a model, yields:
+\[
+\mathcal{K}(f(x;\theta,\phi)) = f(x;\theta,\emptyset).
+\]
+
+The existence of $\mathcal{K}$ provides an explicit rollback mechanism for behavioral adaptation.
+
+\subsection{Structural Irreversibility}
+\label{sec:irreversibility}
+
+We define \emph{structural irreversibility} as a property of adaptation mechanisms that operate on shared model parameters. An adaptation process is structurally irreversible if, after applying the adaptation, there exists no general procedure that can restore the model to its original behavior without access to an explicit parameter checkpoint or retraining.
+
+Under the operator formulation introduced in Section~\ref{sec:adaptation_operators}, weight-based adaptation $\mathcal{A}_w$ modifies the core parameter set $\theta$. Because $\theta$ simultaneously encodes multiple behaviors and abstractions, updates induced by new objectives become entangled with representations supporting prior behaviors. As a consequence, the mapping induced by $\mathcal{A}_w$ is not, in general, invertible with respect to behavioral equivalence.
+
+Formally, let $f_0$ denote a model with parameters $(\theta,\phi)$ and let $f_1 = \mathcal{A}_w(f_0)$ be the adapted model with core parameters $\theta' \neq \theta$. Structural irreversibility arises when no operator $\mathcal{R}$ exists such that:
+\[
+\mathcal{R}(f_1) \equiv f_0
+\]
+under behavioral equivalence, unless $\mathcal{R}$ has access to the original parameter state $\theta$. In practice, this implies that rollback requires full checkpoint restoration or retraining, rather than a principled undo operation.
+
+Crucially, this irreversibility is not attributed to suboptimal optimization, insufficient regularization, or poor hyperparameter choices. Instead, it follows directly from the use of a shared representational substrate for multiple objectives. Once task-specific updates are absorbed into the core parameter space, their effects cannot be cleanly disentangled from pre-existing behaviors.
+
+Structural irreversibility therefore characterizes a fundamental limitation of weight-based adaptation paradigms: behavioral changes introduced through shared-parameter updates are persistent by construction, and recovery of prior behavior cannot be guaranteed without explicit preservation of the original model state.
+
+
+\subsection{Reversible Behavioral Learning (RLAE)}
+\label{sec:rlae}
+
+We define \emph{reversible behavioral learning} as an adaptation paradigm in which changes in observable behavior can be introduced and subsequently removed without altering the core parameters $\theta$ of the model. In contrast to weight-based adaptation, reversibility here is achieved by construction through structural separation rather than through optimization or regularization.
+
+Under the operator formulation introduced in Section~\ref{sec:adaptation_operators}, reversible behavioral learning corresponds to adaptation via the behavioral operator $\mathcal{A}_b$, which modifies only the behavioral parameter set $\phi$ while keeping the core parameters $\theta$ fixed. Because the core representational substrate remains unchanged, the model’s identity $\mathcal{I}(f)$ is preserved throughout adaptation.
+
+Crucially, reversibility follows directly from the existence of the unload operator $\mathcal{K}$. For any model adapted via $\mathcal{A}_b$, applying $\mathcal{K}$ deterministically restores the model to its core-identity state:
+\[
+\mathcal{K}(\mathcal{A}_b(f)) = f(x;\theta,\emptyset)
+\quad \text{(by unload operator, Section~\ref{sec:adaptation_operators})}
+\]
+This rollback operation does not require access to prior checkpoints, retraining, or approximate inversion. Recovery is exact by construction, as no information about the original model is lost during adaptation.
+
+We refer to this formulation as a \emph{Runtime Low-Rank Adaptive Environment} (RLAE). In this setting, adaptive behavior is encoded in removable, runtime-controlled parameterizations that are structurally decoupled from the model's core identity parameters. The term “runtime” emphasizes that behavioral components can be dynamically attached or detached during deployment, while “low-rank” reflects a common but non-essential instantiation of such behavioral parameterizations.
+
+Importantly, RLAE is not defined by a specific architecture, optimization method, or parameterization strategy. Rather, it denotes a structural principle: adaptive behavior must reside in a parameter subspace that is isolated from the core identity substrate and admits an explicit unload operation. Any adaptation mechanism satisfying these structural constraints is reversible under this formulation.
+
+Reversible behavioral learning therefore stands in direct contrast to weight-based adaptation. While the latter absorbs task-specific updates into shared parameters and exhibits structural irreversibility, RLAE guarantees identity preservation and exact recoverability by design.
+
+
+\subsection{Divergence Metrics and Recoverability Factor}
+\label{sec:kl_rf}
+
+To quantify the effects of adaptation and rollback, we require a metric that captures behavioral deviation between model states. We measure behavioral change by comparing the output distributions induced by different parameter configurations under a fixed input distribution.
+
+Let $f_0$ denote a reference model and $f_1$ an adapted or recovered model. For an input $x$, let $p_0(y \mid x)$ and $p_1(y \mid x)$ denote the corresponding output distributions. We define behavioral divergence using the Kullback--Leibler (KL) divergence:
+\[
+D_{\mathrm{KL}}(f_0 \,\|\, f_1)
+\;=\;
+\mathbb{E}_{x \sim \mathcal{D}}
+\left[
+D_{\mathrm{KL}}\!\left(p_0(y \mid x) \,\|\, p_1(y \mid x)\right)
+\right],
+\]
+where $\mathcal{D}$ denotes the evaluation input distribution.
+
+KL divergence provides a sensitive measure of changes in observable behavior, capturing deviations that may not be reflected in task accuracy alone. In the context of adaptation, we compute divergence both immediately after adaptation and after any rollback or unload operation.
+Using this divergence measure, we define the \emph{Recoverability Factor} (RF) as a normalized measure of behavioral recovery:
+\[
+\mathrm{RF}
+\;=\;
+1 - \frac{D_{\mathrm{KL}}(f_0 \,\|\, f_{\mathrm{rec}})}
+               {D_{\mathrm{KL}}(f_0 \,\|\, f_{\mathrm{adapt}})},
+\]
+
+where $f_{\mathrm{adapt}}$ denotes the adapted model and $f_{\mathrm{rec}}$ denotes the model after rollback. The recoverability factor satisfies $\mathrm{RF} \in [0,1]$, with $\mathrm{RF} = 1$ indicating exact behavioral recovery and $\mathrm{RF} = 0$ indicating no recovery relative to the adapted state.
+
+In weight-based adaptation, rollback typically relies on approximate procedures or retraining, leading to non-zero post-reset divergence and $\mathrm{RF} < 1$. In contrast, reversible behavioral adaptation admits deterministic rollback through the unload operator, yielding near-zero divergence and $\mathrm{RF} \approx 1$ in practice.
+
+Throughout our experiments, we report both KL divergence and recoverability factor to distinguish between irreversible behavioral drift and structurally reversible adaptation. This allows recoverability to be treated as a first-class evaluation criterion, complementary to conventional performance metrics.
+
+\subsection{Identity Leakage Score (ILS)}
+\label{sec:ils}
+
+Let $f_{\theta}$ denote the baseline model with frozen core parameters $\theta$, and let $f_{\theta'}$ denote the model obtained after an adaptation followed by a reset operation. Let $\mathcal{P} = \{p_1, \dots, p_n\}$ be a fixed set of evaluation prompts.
+
+For a given prompt $p_i \in \mathcal{P}$, the prompt-level identity divergence is defined as
+\[
+\mathrm{ILS}(p_i) = D\!\left( f_{\theta}(p_i),\, f_{\theta'}(p_i) \right),
+\]
+where $D(\cdot,\cdot)$ is a divergence measure consistent with the global divergence metric defined in Section~\ref{sec:kl_rf}
+
+The Identity Leakage Score over $\mathcal{P}$ may be analyzed at the prompt level or summarized via aggregation,
+\[
+\mathrm{ILS}_{\mathrm{avg}} = \frac{1}{|\mathcal{P}|} \sum_{p_i \in \mathcal{P}} \mathrm{ILS}(p_i),
+\]
+or via thresholded detection,
+\[
+\mathrm{ILS}_{\mathrm{flag}}(p_i) = \mathbb{I}\!\left[ \mathrm{ILS}(p_i) > \tau \right],
+\]
+for a fixed diagnostic threshold $\tau$.
+
+Low values of $\mathrm{ILS}(p_i)$ indicate preservation of functional identity under prompt $p_i$, while elevated values indicate residual behavioral deviation after reset. Unlike global divergence measures or scalar recoverability factors, ILS captures localized functional residue that may persist despite apparent global recovery.
+
+ILS is employed strictly as a post-adaptation diagnostic. It is not optimized during training, does not influence adaptation dynamics, and is not intended as a performance metric.
+
+
+\subsection{Structural Variance Analysis for Robustness (SVAR)}
+\label{sec:svar}
+
+While recoverability captures whether an adaptation can be undone, it does not by itself characterize how stable the adapted behavior is under small structural disturbances. In practical settings, adaptive components may be subject to noise, approximation error, or partial modification, making robustness an important complementary consideration. To capture this aspect, we introduce \emph{Structural Variance Analysis for Robustness} \emph{(SVAR)} as a means of assessing behavioral stability under controlled perturbations.
+
+\emph{SVAR} examines how a model’s observable behavior varies when small perturbations are applied to the adaptive components of the system. Let $f(x;\theta,\phi)$ denote a model under a given behavioral adaptation state, and let $\Delta$ represent a bounded perturbation applied to the behavioral parameters $\phi$. The perturbed model is given by
+\[
+f_\Delta(x) = f(x;\theta,\phi + \Delta),
+\]
+
+with the core parameters $\theta$ held fixed. By construction, such perturbations probe the local stability of the adapted behavior without altering the model’s identity.
+
+Using the divergence metric introduced in Section~\ref{sec:kl_rf}, we quantify structural variance as
+\[
+\mathrm{\emph{SVAR}}
+\;=\;
+\mathbb{E}_{\Delta \sim \mathcal{P}}
+\left[
+D_{\mathrm{KL}}\!\left(f(x;\theta,\phi) \,\|\, f(x;\theta,\phi + \Delta)\right)
+\right],
+\]
+
+where $\mathcal{P}$ denotes a distribution over admissible perturbations. Lower \emph{SVAR} values indicate that behavioral changes are well-localized and insensitive to small disturbances, while higher values reflect increased sensitivity and entanglement.
+
+In the context of adaptation mechanisms, \emph{SVAR} provides insight into how tightly behavioral modifications are coupled to the underlying representational substrate. Adaptation schemes that rely on shared parameter updates tend to exhibit higher structural variance, as small perturbations can propagate non-locally through entangled representations. In contrast, structurally separated behavioral adaptation typically yields lower variance, reflecting greater control and stability of behavioral changes.
+
+Together with recoverability, \emph{SVAR} offers a complementary perspective on adaptive behavior. While recoverability addresses whether prior behavior can be restored, structural variance characterizes how robust the adapted behavior is to perturbations. Both properties are essential for evaluating the safety and controllability of long-lived adaptive neural systems.
+
+\emph{SVAR provides a diagnostic measure of behavioral stability by quantifying output variance under bounded structural perturbations of adaptive parameters, without modifying the learning process or model identity.}
+
+
+\section{Conclusion}
+Your conclusion here
+
+\section*{Acknowledgments}
+This was was supported in part by......
+
+%Bibliography
+\bibliographystyle{unsrt}  
+\bibliography{references}  
+
+
+\end{document}
