@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REVA4 Research Lab | Runtime Intelligence & Structural Robustness</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(20, 20, 25, 0.7);
+            --accent-red: #ff3e3e;
+            --accent-blue: #3e88ff;
+            --accent-green: #3eff8e;
+            --text-main: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(62, 136, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255, 62, 62, 0.05) 0%, transparent 40%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* --- Header --- */
+        header {
+            padding: 4rem 0;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 1s forwards;
+        }
+
+        .logo-tag {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        /* --- Hero Image --- */
+        .hero-image-container {
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            margin-bottom: 6rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            opacity: 0;
+            animation: fadeInUp 1s 0.2s forwards;
+        }
+
+        .hero-image {
+            width: 100%;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .hero-image:hover {
+            transform: scale(1.02);
+        }
+
+        /* --- Sections Grid --- */
+        .framework-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 6rem;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: var(--transition);
+            opacity: 0;
+            animation: fadeInUp 1s 0.4s forwards;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .framework-icon {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .card-accent-blue h2 { color: var(--accent-blue); }
+        .card-accent-red h2 { color: var(--accent-red); }
+
+        .glass-card p {
+            color: var(--text-dim);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+
+        .feature-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent-blue);
+        }
+
+        .card-accent-red .feature-list li::before {
+            color: var(--accent-red);
+        }
+
+        /* --- Papers Section --- */
+        .papers-section {
+            margin-bottom: 8rem;
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .papers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .papers-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .paper-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        .paper-card:hover {
+            background: rgba(30, 30, 35, 0.8);
+            border-color: var(--accent-green);
+            transform: scale(1.02);
+        }
+
+        .paper-icon {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+            background: rgba(62, 255, 142, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-green);
+        }
+
+        .paper-content h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .paper-content p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .download-btn {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent-green);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Footer --- */
+        footer {
+            padding: 4rem 0;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        footer p {
+            margin-bottom: 1rem;
+        }
+
+        .footer-quote {
+            font-style: italic;
+            max-width: 500px;
+            margin: 2rem auto;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo-tag">Research Laboratory</div>
+            <h1>REVA4 Research</h1>
+            <p class="tagline">Proving intelligence through bounded invariance and structural perturbation. Moving AI alignment from hidden weight mutation to a runtime-governed paradigm.</p>
+        </header>
+
+        <div class="hero-image-container">
+            <img src="./arts/World of REVA4RE.png" alt="World of REVA4RE" class="hero-image">
+        </div>
+
+        <section class="framework-sections">
+            <div class="glass-card card-accent-blue">
+                <span class="framework-icon">🧊</span>
+                <h2>RLAE</h2>
+                <p>Runtime Low-Rank Adaptive Environments. A learning paradigm where updates are applied exclusively to LoRA parameters.</p>
+                <ul class="feature-list">
+                    <li>Frozen Core Invariance</li>
+                    <li>Behavioral Externalization</li>
+                    <li>Killability & Reversibility</li>
+                    <li>No Persistent Identity</li>
+                </ul>
+            </div>
+
+            <div class="glass-card card-accent-red">
+                <span class="framework-icon">🛡️</span>
+                <h2>SVAR</h2>
+                <p>Structural Variance Analysis for Robustness. A diagnostic framework to assess robustness and reset integrity.</p>
+                <ul class="feature-list">
+                    <li>Identity Leakage Score (ILS)</li>
+                    <li>Stability Envelopes</li>
+                    <li>Reset Integrity Verification</li>
+                    <li>Structural Drift Tracking</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="papers-section">
+            <div class="section-header">
+                <h2>Research Papers</h2>
+                <p>Latest technical reports and publications from our experiments.</p>
+            </div>
+
+            <div class="papers-grid">
+                <a href="PaperOne.pdf" class="paper-card">
+                    <div class="paper-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <div class="paper-content">
+                        <h3>Paper One — Latest PDF</h3>
+                        <p>On The Structural Limitations Of Weight Based Neural Adaptations And The Role of Reversible Behavioural Learning</p>
+                        <div class="download-btn">
+                            View Research Paper →
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-quote">
+                “Intelligence as powerful and alive, yet deliberately hollow at its center — governed, observable, and stripped of its identity.”
+            </div>
+            <p>© 2026 REVA4 Research Team. Licensed under AGPL-3.0.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
