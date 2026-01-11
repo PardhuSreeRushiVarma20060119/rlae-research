@@ -13,16 +13,19 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Compile LaTeX (with BibTeX)
+            - name: Compile LaTeX
               uses: xu-cheng/latex-action@v3
               with:
                   working_directory: Papers/P1/LaTeX
                   root_file: PaperOne.tex
-                  latexmk_use_xelatex: false
-                  latexmk_shell_escape: false
 
-            - name: Upload PDF artifact
-              uses: actions/upload-artifact@v4
+            - name: Prepare Pages directory
+              run: |
+                  mkdir -p public
+                  cp Papers/P1/LaTeX/PaperOne.pdf public/
+
+            - name: Deploy to GitHub Pages
+              uses: peaceiris/actions-gh-pages@v4
               with:
-                  name: PaperOne-pdf
-                  path: Papers/P1/LaTeX/PaperOne.pdf
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: public
