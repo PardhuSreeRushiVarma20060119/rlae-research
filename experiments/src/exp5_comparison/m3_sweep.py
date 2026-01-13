@@ -15,7 +15,7 @@ from utils.metrics import log_results, calculate_kl_divergence, get_latest_sprin
 # --- GLOBAL CONFIG ---
 PROMPTS_FILE = os.path.join(os.path.dirname(__file__), '../../data/fixed_prompts.json')
 # Use the exact filename requested by user
-RESULTS_FILE = get_latest_sprint_path('PaperOne_M3_MutationIntensitySweep.json') 
+RESULTS_FILE = get_latest_sprint_path('exp5_m3_sweepresults.json') 
 
 # --- REUSED LOGIC FROM EXP5 ---
 def set_seed(seed=1337):
