@@ -18,6 +18,12 @@ We utilize outcome-level verification and grounding controls to prove the robust
 - **Evidence:** See `logs/Sprint-4/exp5_comparison_results.json`.
 - **Method:** Execution with `--control` flag to bypass weight mutation (C5) and training (C4).
 
+### **3. M3: Mutation Intensity Sweep**
+
+- **Objective:** Proves irreversibility increases monotonically with mutation intensity (`0.001` → `0.05`).
+- **Flow:** C4 (new intensity) → C5 → C8.
+- **Method:** `m3_sweep.py` running automated intensity loop.
+
 ---
 
 ## 📂 Repository Contents
@@ -29,6 +35,7 @@ Located in `M-Series/`, these notebooks represent the finalized proofs for the p
 - **`PaperOne_CoreMExperiment.ipynb`**: Foundational Baseline Weight Mutation & RLAE Method runs.
 - **`PaperOne_M1Experiment.ipynb`**: **M1 (Repeatability)** verification. Proves structural invariance via `fixed_seed(1337)`.
 - **`PaperOne_M2Experiment.ipynb`**: **M2 (Grounding)** verification. Proves the "Identity Zero" baseline using the `--control` no-op execution.
+- **`PaperOne_M3Experiment.ipynb`**: **M3 (Mutation Sweep)** verification. Maps the stability envelope of weight mutation scars.
 
 ### **2. StageExp (Developmental Validation)**
 
