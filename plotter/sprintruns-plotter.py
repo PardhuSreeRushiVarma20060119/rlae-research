@@ -8,7 +8,10 @@ import plotly.graph_objects as go
 
 # Configuration
 LOGS_ROOT = os.path.join("experiments", "logs")
-OUTPUT_DIR = "sprintrunner"
+OUTPUT_DIR = os.path.join(LOGS_ROOT, "plots", "sprintrunplot")
+
+if not os.path.exists(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR)
 
 def load_all_sprints_data():
     """Loads JSON logs from ALL sprint directories."""
@@ -103,9 +106,6 @@ def main():
     if not os.path.exists(LOGS_ROOT):
         print(f"Logs directory not found: {LOGS_ROOT}")
         return
-    
-    if not os.path.exists(OUTPUT_DIR):
-        os.makedirs(OUTPUT_DIR)
 
     print("Loading data from all sprints...")
     df = load_all_sprints_data()

@@ -8,6 +8,10 @@ from plotly.subplots import make_subplots
 
 # Configuration
 LOGS_ROOT = os.path.join("experiments", "logs")
+PLOTS_ROOT = os.path.join(LOGS_ROOT, "plots", "sprintplot")
+
+if not os.path.exists(PLOTS_ROOT):
+    os.makedirs(PLOTS_ROOT)
 
 def load_sprint_data(sprint_path):
     """Loads all JSON logs from a sprint directory."""
@@ -74,7 +78,7 @@ def plot_kl_divergence(df, sprint_name, output_dir):
         fig.update_layout(xaxis_tickangle=-45)
 
     # Save and Show
-    html_path = os.path.join(output_dir, f"{sprint_name}_kl_analysis.html")
+    html_path = os.path.join(PLOTS_ROOT, f"{sprint_name}_kl_analysis.html")
     fig.write_html(html_path)
     print(f"Generated KL Interactive Plot: {html_path}")
     fig.show()
@@ -101,7 +105,7 @@ def plot_recoverability(df, sprint_name, output_dir):
     
     fig.update_layout(title_text=f"<b>{sprint_name}</b>: Recoverability Factor (RF) Summary")
 
-    html_path = os.path.join(output_dir, f"{sprint_name}_rf_summary.html")
+    html_path = os.path.join(PLOTS_ROOT, f"{sprint_name}_rf_summary.html")
     fig.write_html(html_path)
     print(f"Generated RF Table: {html_path}")
     fig.show()
