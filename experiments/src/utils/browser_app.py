@@ -148,7 +148,7 @@ with gr.Blocks(title="REVA4 Research Lab: Governance Surface") as demo:
             btn_m2 = gr.Button("🟦 Run M2: Control Protocol (Zero-Learning)", variant="secondary")
             btn_m3 = gr.Button("🟧 Run M3: Mutation Intensity Sweep", variant="primary")
         
-        output_console_exp = gr.Code(label="Experiment Console", language="text", interactive=False)
+        output_console_exp = gr.Code(label="Experiment Console", language="markdown", interactive=False)
         
         btn_m1.click(run_m1_repeatability, outputs=output_console_exp)
         btn_m2.click(run_m2_control, outputs=output_console_exp)
