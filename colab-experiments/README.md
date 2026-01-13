@@ -26,8 +26,8 @@ We utilize outcome-level verification and grounding controls to prove the robust
 
 Located in `M-Series/`, these notebooks represent the finalized proofs for the paper.
 
-- **`PaperOne_M0Experiment.ipynb`**: Foundational Baseline Weight Mutation & RLAE Method runs.
-- **`PaperOne_M1Experiment.ipynb`**: **M1 (Repeatability)** verification. Proves structural invariance via `seed=1337`.
+- **`PaperOne_CoreMExperiment.ipynb`**: Foundational Baseline Weight Mutation & RLAE Method runs.
+- **`PaperOne_M1Experiment.ipynb`**: **M1 (Repeatability)** verification. Proves structural invariance via `fixed_seed(1337)`.
 - **`PaperOne_M2Experiment.ipynb`**: **M2 (Grounding)** verification. Proves the "Identity Zero" baseline using the `--control` no-op execution.
 
 ### **2. StageExp (Developmental Validation)**
