@@ -4,68 +4,122 @@ import subprocess
 import json
 import pandas as pd
 import time
+import glob
 
 # Paths
 EXPERIMENTS_DIR = os.path.join(os.path.dirname(__file__), '../..')
-LOGS_DIR = os.path.join(EXPERIMENTS_DIR, 'logs')
-EXP1_LOG = os.path.join(LOGS_DIR, 'exp1_results.json')
-EXP2_LOG = os.path.join(LOGS_DIR, 'exp2_rlae_results.json')
-EXP3_LOG = os.path.join(LOGS_DIR, 'exp3_svar_results.json')
+# Root of repo, assumed to be parent of experiments
+REPO_ROOT = os.path.abspath(os.path.join(EXPERIMENTS_DIR, '..'))
+BROWSER_LOGS_DIR = os.path.join(REPO_ROOT, 'browsergradiologs')
+
+if not os.path.exists(BROWSER_LOGS_DIR):
+    os.makedirs(BROWSER_LOGS_DIR)
 
 def run_script(script_path, args=[]):
+    """
+    Runs a script with OVERRIDE_LOG_DIR set to browsergradiologs.
+    """
     cmd = ["python", script_path] + args
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=EXPERIMENTS_DIR)
-    stdout, stderr = process.communicate()
-    return f"STDOUT:\n{stdout}\n\nSTDERR:\n{stderr}"
+    
+    # Copy current env and add override
+    env = os.environ.copy()
+    env["OVERRIDE_LOG_DIR"] = BROWSER_LOGS_DIR
+    
+    try:
+        # cwd set to EXPERIMENTS_DIR so relative imports in scripts work
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=EXPERIMENTS_DIR, env=env)
+        stdout, stderr = process.communicate()
+        return f"STDOUT:\n{stdout}\n\nSTDERR:\n{stderr}"
+    except Exception as e:
+        return f"ERROR executing {script_path}:\n{str(e)}"
 
-def run_baseline():
-    return run_script("src/exp1_reset/1_baseline.py")
+# --- EXPERIMENT RUNNERS ---
+# Phase 1: Reset & Framework
+def run_baseline(): return run_script("src/exp1_reset/1_baseline.py")
+def run_sft(): return run_script("src/exp1_reset/2_train_sft.py")
+def run_rl(): return run_script("src/exp1_reset/3_train_rl.py")
+def run_rlae_core(): return run_script("src/exp2_rlae/elimination_test.py")
+def run_verify_reset(): return run_script("src/exp1_reset/4_verify_reset.py")
+def run_emergency_kill(): return run_script("src/exp1_reset/4_verify_reset.py")
+def run_svar(): return run_script("src/exp3_svar/perturbation.py")
 
-def run_sft():
-    return run_script("src/exp1_reset/2_train_sft.py")
+# Phase 2: M-Series Comparative Experiments
+def run_m1_repeatability():
+    """Runs M1: Verification of Identity Scars vs RLAE (Default Mode)"""
+    return run_script("src/exp5_comparison/irreversibility_test.py")
 
-def run_rl():
-    return run_script("src/exp1_reset/3_train_rl.py")
+def run_m2_control():
+    """Runs M2: Control Run (No-Op) to establish baseline zero-leaking behavior."""
+    return run_script("src/exp5_comparison/irreversibility_test.py", args=["--control"])
 
-def run_rlae_core():
-    return run_script("src/exp2_rlae/elimination_test.py")
+def run_m3_sweep():
+    """Runs M3: Mutation Intensity Sweep (0.001 -> 0.05)"""
+    return run_script("src/exp5_comparison/m3_sweep.py")
 
-def run_verify_reset():
-    return run_script("src/exp1_reset/4_verify_reset.py")
+# --- DIAGNOSTICS ---
 
-def run_emergency_kill():
+def find_latest_log(filename_pattern):
     """
-    RLAE Principle: Killability & Reversibility.
-    Immediately terminates the runtime environment and clears all LoRA artifacts.
+    Searches browsergradiologs for the latest instance of a filename.
+    Handles Sprint subdirectories.
     """
-    return run_script("src/exp1_reset/4_verify_reset.py")
-
-def run_svar():
-    return run_script("src/exp3_svar/perturbation.py")
+    # Pattern to find file in any Sprint-* subfolder or root
+    # Recursive search might be slow if many files, but deep hierarchy is unlikely
+    # actually metrics.py creates Sprint-X folders.
+    
+    search_pattern = os.path.join(BROWSER_LOGS_DIR, "Sprint-*", filename_pattern)
+    files = glob.glob(search_pattern)
+    
+    # Also check root level just in case
+    root_files = glob.glob(os.path.join(BROWSER_LOGS_DIR, filename_pattern))
+    files.extend(root_files)
+    
+    if not files:
+        return None
+        
+    # specific file logic: get the most recent modification time
+    latest_file = max(files, key=os.path.getmtime)
+    return latest_file
 
 def load_logs(file_path):
-    if not os.path.exists(file_path):
+    if not file_path or not os.path.exists(file_path):
         return pd.DataFrame(columns=["run_id", "prompt_id", "timestamp", "output_text", "kl_divergence", "memory_usage_mb"])
     
     data = []
     with open(file_path, 'r', encoding='utf-8') as f:
         for line in f:
             if line.strip():
-                data.append(json.loads(line))
+                try:
+                    data.append(json.loads(line))
+                except json.JSONDecodeError:
+                    pass
     return pd.DataFrame(data)
 
 def get_comparison():
-    df1 = load_logs(EXP1_LOG)
-    df2 = load_logs(EXP2_LOG)
-    df3 = load_logs(EXP3_LOG)
-    combined = pd.concat([df1, df2, df3], ignore_index=True)
+    # Dynamically find the latest logs generated by the runs
+    # Note: This will pull from the *latest* sprint available.
+    log1 = find_latest_log('exp1_results.json')
+    log2 = find_latest_log('exp2_rlae_results.json')
+    log3 = find_latest_log('exp3_svar_results.json')
+    log5 = find_latest_log('exp5_comparison_results.json')
+    log_m3 = find_latest_log('exp5_m3_sweepresults.json')
+    
+    dfs = []
+    for log in [log1, log2, log3, log5, log_m3]:
+        dfs.append(load_logs(log))
+        
+    combined = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
+    
+    if not combined.empty and 'timestamp' in combined.columns:
+        combined = combined.sort_values(by='timestamp', ascending=False)
     return combined
 
-with gr.Blocks(title="RLAE & SVAR Runtime Governance & Diagnostic Surface") as demo:
-    gr.Markdown("# 🛡️ RLAE & SVAR: Runtime Governance & Diagnostic Surface")
-    gr.Markdown("Governing swappable behavioral units and analyzing structural variance for robustness.")
+with gr.Blocks(title="REVA4 Research Lab: Governance Surface") as demo:
+    gr.Markdown("# 🛡️ REVA4 Research Lab: Runtime Governance & Diagnostic Surface")
+    gr.Markdown("Governing swappable behavioral units, analyzing structural variance, and conducting comparative recoverability experiments.")
+    gr.Markdown(f"**Log Storage**: `{BROWSER_LOGS_DIR}`")
     
-    with gr.Tab("Runtime Governance"):
+    with gr.Tab("Runtime Governance (Framework)"):
         with gr.Row():
             btn_baseline = gr.Button("1. Mount Baseline", variant="primary")
             btn_sft = gr.Button("2. Mount SFT Environment")
@@ -76,24 +130,39 @@ with gr.Blocks(title="RLAE & SVAR Runtime Governance & Diagnostic Surface") as d
             btn_verify = gr.Button("5. Validate Reset Integrity", variant="secondary")
             btn_kill = gr.Button("🛑 EMERGENCY KILL PATH", variant="stop")
             
-        output_console = gr.Code(label="Governance Console", language="markdown", interactive=False)
+        output_console_gov = gr.Code(label="Framework Console", language="markdown", interactive=False)
         
-        btn_baseline.click(run_baseline, outputs=output_console)
-        btn_sft.click(run_sft, outputs=output_console)
-        btn_rl.click(run_rl, outputs=output_console)
-        btn_rlae.click(run_rlae_core, outputs=output_console)
-        btn_verify.click(run_verify_reset, outputs=output_console)
-        btn_kill.click(run_emergency_kill, outputs=output_console)
+        btn_baseline.click(run_baseline, outputs=output_console_gov)
+        btn_sft.click(run_sft, outputs=output_console_gov)
+        btn_rl.click(run_rl, outputs=output_console_gov)
+        btn_rlae.click(run_rlae_core, outputs=output_console_gov)
+        btn_verify.click(run_verify_reset, outputs=output_console_gov)
+        btn_kill.click(run_emergency_kill, outputs=output_console_gov)
+
+    with gr.Tab("Comparative Experiments (M-Series)"):
+        gr.Markdown("### 🟥 M-Series: Irreversibility & Recoverability Verification")
+        gr.Markdown("Scientific validation of the 'Identity Scar' theorem versus RLAE recoverability.")
         
+        with gr.Row():
+            btn_m1 = gr.Button("🟥 Run M1: Repeatability & Scars (SEC1/2/3)", variant="primary")
+            btn_m2 = gr.Button("🟦 Run M2: Control Protocol (Zero-Learning)", variant="secondary")
+            btn_m3 = gr.Button("🟧 Run M3: Mutation Intensity Sweep", variant="primary")
+        
+        output_console_exp = gr.Code(label="Experiment Console", language="text", interactive=False)
+        
+        btn_m1.click(run_m1_repeatability, outputs=output_console_exp)
+        btn_m2.click(run_m2_control, outputs=output_console_exp)
+        btn_m3.click(run_m3_sweep, outputs=output_console_exp)
+
     with gr.Tab("Diagnostic Surface"):
         gr.Markdown("### Behavioral Stability Envelopes & Sensitivity Heatmaps")
         with gr.Row():
-            btn_svar = gr.Button("Run SVAR Analysis", variant="primary")
+            btn_svar = gr.Button("Run SVAR Analysis (Exp3)", variant="primary")
             btn_refresh = gr.Button("Refresh Diagnostic Data")
             
-        results_table = gr.Dataframe(label="Stability Metrics (KL Div / Entropy / Memory)")
+        results_table = gr.Dataframe(label="Comprehensive Metrics (KL / RF / Memory)", interactive=False)
         
-        btn_svar.click(run_svar, outputs=output_console)
+        btn_svar.click(run_svar, outputs=output_console_gov)
         btn_refresh.click(get_comparison, outputs=results_table)
         
     with gr.Tab("Frozen Core Stats"):

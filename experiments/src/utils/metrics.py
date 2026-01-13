@@ -76,7 +76,12 @@ def get_sprint_log_path(filename, base_log_dir=None, use_existing=False):
     Otherwise, it increments unless EXPERIMENT_SPRINT is set.
     """
     if base_log_dir is None:
-        base_log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../logs"))
+        # Check for override from browser_app or other drivers
+        override_dir = os.environ.get("OVERRIDE_LOG_DIR")
+        if override_dir:
+            base_log_dir = override_dir
+        else:
+            base_log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../logs"))
     
     os.makedirs(base_log_dir, exist_ok=True)
     
