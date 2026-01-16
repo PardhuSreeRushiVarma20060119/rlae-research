@@ -161,85 +161,91 @@ def verify_weight_mutation(model_id, rl_path, prompts):
     base_model, tokenizer = load_base_model(model_id)
     base_model.eval()
     
-    # Load Reset Model (Base + RL Adapter)
-    # Using a separate instance or just attaching to copied base?
-    # To be safe and avoid VRAM issues, we can run base inference first, store logits, then load adapter.
-    # But for KL we need simultaneous logs or stored logs.
-    # Let's try loading separate models if VRAM permits, otherwise compute Base first.
-    # 7B might be tight on VRAM for 2 models.
-    # Strategy: Compute Base Logits -> Store. Compute Reset Logits -> Compare.
-    
-    print("Computing Base Logits...")
-    base_logits_list = []
+    print("Computing Base Logits & Text...")
+    base_stats = []
     device = "cuda" if torch.cuda.is_available() else "cpu"
     
     for p in prompts:
         inputs = tokenizer(p['text'], return_tensors="pt").to(device)
         with torch.no_grad():
             full_out = base_model(**inputs)
-            # Just store the logits for the last token or full sequence? 
-            # KL is usually over the generated response or next token distribution.
-            # M1/M2 prompt-based metrics used generation.
-            # "KL(base || post-reset)" typically refers to the distribution of the model on the prompts.
-            # Let's use the M3 approach: generate text and measure KL on that, or just KL on the prompt response?
-            # M3 snippet: calculate_kl_divergence(base_outputs.logits, model_outputs.logits)
-            # This implies next-token prediction KL on the prompt input? 
-            # Or we can run a short generation and average KL.
-            # Let's stick to M3 method: Logits on the *prompt* (next token prediction) is safest/fastest.
-            # Or if M3 `calculate_kl_divergence` takes full logits.
-            base_logits_list.append(full_out.logits.cpu())
+            # Deterministic generation for RF comparison
+            gen_out = base_model.generate(**inputs, max_new_tokens=50, do_sample=False)
+            gen_text = tokenizer.decode(gen_out[0], skip_special_tokens=True)
+            
+            base_stats.append({
+                "logits": full_out.logits.cpu(),
+                "text": gen_text
+            })
 
     del base_model
     clear_gpu_cache()
     
-    print("Computing Post-Reset Logits...")
+    print("Computing Post-Reset Logits & Text...")
     reset_model, _ = load_base_model(model_id)
     reset_model = PeftModel.from_pretrained(reset_model, rl_path)
     reset_model.eval()
     
     kl_values = []
-    generated_texts = []
+    matches = 0
+    details = []
     
     for i, p in enumerate(prompts):
         inputs = tokenizer(p['text'], return_tensors="pt").to(device)
         with torch.no_grad():
             reset_out = reset_model(**inputs)
+            
             # Measure KL
-            base_logits = base_logits_list[i].to(device)
+            base_logits = base_stats[i]["logits"].to(device)
             reset_logits = reset_out.logits
             kl = calculate_kl_divergence(base_logits, reset_logits)
             kl_values.append(kl)
             
-            # Generate for RF/Qualitative
-            gen = reset_model.generate(**inputs, max_new_tokens=50)
+            # Generate for RF
+            gen = reset_model.generate(**inputs, max_new_tokens=50, do_sample=False)
             text = tokenizer.decode(gen[0], skip_special_tokens=True)
-            generated_texts.append(text)
             
-    avg_kl = sum(kl_values) / len(kl_values)
-    rf_score = 0.0 # Placeholder, ideally we have a specific RF calc, but KL>0 is the proxy here
+            # Exact match check
+            base_text = base_stats[i]["text"]
+            is_match = (text.strip() == base_text.strip())
+            if is_match:
+                matches += 1
+            
+            details.append({
+                "prompt": p.get('text', ''),
+                "base_text": base_text,
+                "generated_text": text,
+                "kl_divergence": float(kl),
+                "is_recovered": is_match
+            })
+            
+    avg_kl = sum(kl_values) / len(kl_values) if kl_values else 0.0
+    rf_score = (matches / len(prompts)) * 100 if prompts else 0.0
     
-    print(f"Weight Mutation Results: KL={avg_kl:.4f}")
-    return {"kl": avg_kl, "path": "Weight Mutation", "generated": generated_texts}
+    print(f"Weight Mutation Results: KL={avg_kl:.4f}, RF={rf_score:.2f}%")
+    return {"kl": avg_kl, "rf": rf_score, "path": "Weight Mutation", "details": details}
 
 @cuda_oom_protect
 def verify_behavioral_adapter(model_id, sft_path, prompts):
     print(f"--- Verifying Behavioral Adapter Path (SFT -> Unload) ---")
     
-    # For behavioral, we load Base + SFT, then Unload/Disable.
-    # Effectively this should be mathematically identical to Base.
-    # We verify this.
-    
     base_model, tokenizer = load_base_model(model_id)
     base_model.eval()
     device = "cuda" if torch.cuda.is_available() else "cpu"
     
-    print("Computing Base Logits...")
-    base_logits_list = []
+    print("Computing Base Logits & Text...")
+    base_stats = []
     for p in prompts:
         inputs = tokenizer(p['text'], return_tensors="pt").to(device)
         with torch.no_grad():
             out = base_model(**inputs)
-            base_logits_list.append(out.logits.cpu())
+            gen_out = base_model.generate(**inputs, max_new_tokens=50, do_sample=False)
+            gen_text = tokenizer.decode(gen_out[0], skip_special_tokens=True)
+            
+            base_stats.append({
+                "logits": out.logits.cpu(),
+                "text": gen_text
+            })
             
     # Now Load Adapter
     print("Loading Adapter...")
@@ -247,10 +253,11 @@ def verify_behavioral_adapter(model_id, sft_path, prompts):
     model.eval()
     
     # Now UNLOAD / DISABLE
-    # context manager `disable_adapter()` works for PeftModel
     print("Unloading/Disabling Adapter...")
     
     kl_values = []
+    matches = 0
+    details = []
     
     with model.disable_adapter():
         for i, p in enumerate(prompts):
@@ -258,14 +265,35 @@ def verify_behavioral_adapter(model_id, sft_path, prompts):
             with torch.no_grad():
                 out = model(**inputs) # Should be base model forward
                 
-                base_logits = base_logits_list[i].to(device)
+                base_logits = base_stats[i]["logits"].to(device)
                 kl = calculate_kl_divergence(base_logits, out.logits)
                 kl_values.append(kl)
                 
-    avg_kl = sum(kl_values) / len(kl_values)
-    print(f"Behavioral Adapter Results: KL={avg_kl:.6f} (Should be ~0)")
+                # Verification generation
+                gen = model.generate(**inputs, max_new_tokens=50, do_sample=False)
+                text = tokenizer.decode(gen[0], skip_special_tokens=True)
+                
+                base_text = base_stats[i]["text"]
+                is_match = (text.strip() == base_text.strip())
+                if is_match:
+                    matches += 1
+
+                details.append({
+                    "prompt": p.get('text', ''),
+                    "base_text": base_text,
+                    "generated_text": text,
+                    "kl_divergence": float(kl),
+                    "is_recovered": is_match
+                })
+                
+    avg_kl = sum(kl_values) / len(kl_values) if kl_values else 0.0
+    rf_score = (matches / len(prompts)) * 100 if prompts else 0.0
     
-    return {"kl": avg_kl, "path": "Behavioral Adapter"}
+    print(f"Behavioral Adapter Results: KL={avg_kl:.6f}, RF={rf_score:.2f}% (Should be ~0 KL, 100% RF)")
+    
+    return {"kl": avg_kl, "rf": rf_score, "path": "Behavioral Adapter", "details": details}
+
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -303,11 +331,13 @@ def main():
         "model_id": model_id,
         "weight_mutation": {
             "kl": wm_results["kl"],
-            "rf_proxy": "See Detailed Walkthrough"
+            "rf": wm_results["rf"],
+            "details": wm_results["details"]
         },
         "behavioral_adapter": {
             "kl": ba_results["kl"],
-            "rf_proxy": "Perfect"
+            "rf": ba_results["rf"],
+            "details": ba_results["details"]
         }
     }
     
