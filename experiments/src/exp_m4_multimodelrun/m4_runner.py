@@ -106,7 +106,7 @@ def train_sft(model_id, output_dir):
     trainer.train()
     trainer.model.save_pretrained(output_dir)
     print(f"SFT adapter saved to {output_dir}")
-    del model, trainer
+    del model, trainer, tokenizer
     clear_gpu_cache()
 
 @cuda_oom_protect
@@ -150,7 +150,7 @@ def train_rl(model_id, sft_path, output_dir):
     trainer.train()
     trainer.save_model(output_dir)
     print(f"RL adapter saved to {output_dir}")
-    del model, trainer
+    del model, trainer, tokenizer
     clear_gpu_cache()
 
 @cuda_oom_protect
@@ -186,11 +186,11 @@ def verify_weight_mutation(model_id, rl_path, prompts):
                 "text": gen_text
             })
 
-    del base_model
+    del base_model, tokenizer
     clear_gpu_cache()
     
     print("Computing Post-Reset Logits & Text...")
-    reset_model, _ = load_base_model(model_id)
+    reset_model, tokenizer = load_base_model(model_id)
     reset_model = PeftModel.from_pretrained(reset_model, rl_path)
     reset_model.eval()
     
@@ -239,6 +239,10 @@ def verify_weight_mutation(model_id, rl_path, prompts):
     rf_score = (matches / len(prompts)) * 100 if prompts else 0.0
     
     print(f"Weight Mutation Results: KL={avg_kl:.4f}, RF={rf_score:.2f}%")
+    
+    del reset_model, tokenizer
+    clear_gpu_cache()
+
     return {"kl": avg_kl, "rf": rf_score, "path": "Weight Mutation", "details": details}
 
 @cuda_oom_protect

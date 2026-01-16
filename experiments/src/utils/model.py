@@ -2,6 +2,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel, LoraConfig, get_peft_model, prepare_model_for_kbit_training
 import os
+import gc
 
 # Default to a small model if not specified
 DEFAULT_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
@@ -53,6 +54,7 @@ def load_base_model(model_id=DEFAULT_MODEL_ID):
     return model, tokenizer
 
 def clear_gpu_cache():
+    gc.collect() # Force Python garbage collection
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
         torch.cuda.ipc_collect()
