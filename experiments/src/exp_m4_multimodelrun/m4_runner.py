@@ -15,7 +15,8 @@ import numpy as np
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.model import load_base_model, attach_lora_config, clear_gpu_cache, cuda_oom_protect
-from utils.metrics import calculate_token_entropy, calculate_kl_divergence, get_sprint_log_path
+from utils.metrics import calculate_kl_divergence, get_sprint_log_path
+
 
 # Constants
 MODELS = {
