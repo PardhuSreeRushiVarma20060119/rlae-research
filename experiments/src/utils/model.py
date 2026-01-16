@@ -20,9 +20,6 @@ def load_base_model(model_id=DEFAULT_MODEL_ID):
     # Use bfloat16 if available, else float32
     torch_dtype = torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float32
     
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        torch_dtype=torch_dtype,
     device_map = "cuda" if torch.cuda.is_available() else "cpu"
     
     model = AutoModelForCausalLM.from_pretrained(
