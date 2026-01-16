@@ -1,21 +1,11 @@
 # 📄 Research Reports
 
-This directory contains formal progress reports and experimental summaries for the RLAE & SVAR project.
-
-## Available Reports
-
-- **`report_2025-12-31`**: Milestone report for M1 & M2 verification.
-  - [.md](file:///c:/Users/pardh/Desktop/REVA4-Research-Lab/reports/report_2025-12-31.md) - Canonical Markdown Source
-  - [.pdf](file:///c:/Users/pardh/Desktop/REVA4-Research-Lab/reports/report_2025-12-31.pdf) - Professional PDF Export
+This directory contains formal progress reports and experimental summaries for the RLAE & SVAR research.
 
 ## Purpose
 
-These reports synthesize raw logs from the `logs/` directory into high-level technical findings, providing mathematical formalization of:
-
-1. **Frozen Core Invariance** (via Structural Invariance Score)
-2. **Modular Specialization** (via SFT Environment Mounting)
-3. **Preference Alignment** (via DPO Reward Margins)
+These reports synthesize raw logs from the `logs/` directory.
 
 ---
 > [!NOTE]
-> All PDF and DOCX exports are generated from the canonical Markdown files to ensure data integrity across formats.
+> All PDF exports are generated from the canonical Markdown files to ensure data integrity across formats.
