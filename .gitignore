@@ -17,6 +17,5 @@ venv/
 *.log
 *.out
 *.synctex.gz
-*.pdf
 templete/
 
