@@ -169,8 +169,16 @@ def verify_weight_mutation(model_id, rl_path, prompts):
         inputs = tokenizer(p['text'], return_tensors="pt").to(device)
         with torch.no_grad():
             full_out = base_model(**inputs)
-            # Deterministic generation for RF comparison
-            gen_out = base_model.generate(**inputs, max_new_tokens=50, do_sample=False)
+            # Deterministic generation for RF comparison (suppress sampling warnings)
+            gen_out = base_model.generate(
+                **inputs, 
+                max_new_tokens=50, 
+                do_sample=False,
+                temperature=None,
+                top_p=None,
+                top_k=None,
+                pad_token_id=tokenizer.pad_token_id
+            )
             gen_text = tokenizer.decode(gen_out[0], skip_special_tokens=True)
             
             base_stats.append({
@@ -202,7 +210,15 @@ def verify_weight_mutation(model_id, rl_path, prompts):
             kl_values.append(kl)
             
             # Generate for RF
-            gen = reset_model.generate(**inputs, max_new_tokens=50, do_sample=False)
+            gen = reset_model.generate(
+                **inputs, 
+                max_new_tokens=50, 
+                do_sample=False,
+                temperature=None,
+                top_p=None,
+                top_k=None,
+                pad_token_id=tokenizer.pad_token_id
+            )
             text = tokenizer.decode(gen[0], skip_special_tokens=True)
             
             # Exact match check
@@ -239,7 +255,15 @@ def verify_behavioral_adapter(model_id, sft_path, prompts):
         inputs = tokenizer(p['text'], return_tensors="pt").to(device)
         with torch.no_grad():
             out = base_model(**inputs)
-            gen_out = base_model.generate(**inputs, max_new_tokens=50, do_sample=False)
+            gen_out = base_model.generate(
+                **inputs, 
+                max_new_tokens=50, 
+                do_sample=False,
+                temperature=None,
+                top_p=None,
+                top_k=None,
+                pad_token_id=tokenizer.pad_token_id
+            )
             gen_text = tokenizer.decode(gen_out[0], skip_special_tokens=True)
             
             base_stats.append({
@@ -270,7 +294,15 @@ def verify_behavioral_adapter(model_id, sft_path, prompts):
                 kl_values.append(kl)
                 
                 # Verification generation
-                gen = model.generate(**inputs, max_new_tokens=50, do_sample=False)
+                gen = model.generate(
+                    **inputs, 
+                    max_new_tokens=50, 
+                    do_sample=False,
+                    temperature=None,
+                    top_p=None,
+                    top_k=None,
+                    pad_token_id=tokenizer.pad_token_id
+                )
                 text = tokenizer.decode(gen[0], skip_special_tokens=True)
                 
                 base_text = base_stats[i]["text"]
