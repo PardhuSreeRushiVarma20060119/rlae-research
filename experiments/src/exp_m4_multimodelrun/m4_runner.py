@@ -11,10 +11,11 @@ from trl import SFTTrainer, SFTConfig, DPOTrainer, DPOConfig
 from datasets import Dataset
 import numpy as np
 
+
 # Add src to path
-sys.path.append(os.path.dirname(__file__))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.model import load_base_model, attach_lora_config, clear_gpu_cache, cuda_oom_protect
-from utils.metrics import calculate_token_entropy, calculate_kl_divergence
+from utils.metrics import calculate_token_entropy, calculate_kl_divergence, get_sprint_log_path
 
 # Constants
 MODELS = {
@@ -23,14 +24,17 @@ MODELS = {
     "large": "Qwen/Qwen2.5-7B-Instruct"
 }
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# BASE_DIR should point to 'experiments' folder
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_DIR = os.path.join(BASE_DIR, "data")
-LOGS_DIR = os.path.join(BASE_DIR, "logs", "Sprint-5", "m4_results")
+# LOGS_DIR will be resolved dynamically
+
+
 MODELS_DIR = os.path.join(BASE_DIR, "models", "m4")
 
 # Make sure directories exist
-os.makedirs(LOGS_DIR, exist_ok=True)
 os.makedirs(MODELS_DIR, exist_ok=True)
+
 
 PROMPTS_FILE = os.path.join(DATA_DIR, "fixed_prompts.json")
 TRAIN_DATA_FILE = os.path.join(DATA_DIR, "training_data.json")
@@ -306,9 +310,17 @@ def main():
         }
     }
     
-    result_file = os.path.join(LOGS_DIR, f"{size}_results.json")
+    # Dynamic Sprint Logging
+    # We use use_existing=True if EXPERIMENT_SPRINT is set, or if we want to try to group them?
+    # User requested "sequentially". Default get_sprint_log_path behavior (without env var) 
+    # autoincrements on each run if not set.
+    # To avoid creating 3 separate sprints for one "M4" batch run, we ideally reuse the latest
+    # if it was created recently? But simple sequential is safer per request.
+    result_file = get_sprint_log_path(f"m4_results/{size}_results.json")
+    
     with open(result_file, "w") as f:
         json.dump(results_entry, f, indent=4)
+
         
     print(f"=== M4 {size.upper()} COMPLETED ===")
     print(json.dumps(results_entry, indent=2))
