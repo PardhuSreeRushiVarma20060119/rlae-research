@@ -319,6 +319,9 @@ def main():
     # if it was created recently? But simple sequential is safer per request.
     result_file = get_sprint_log_path(f"m4_results/{size}_results.json")
     
+    # Ensure the subdirectory (e.g., m4_results) exists
+    os.makedirs(os.path.dirname(result_file), exist_ok=True)
+    
     with open(result_file, "w") as f:
         json.dump(results_entry, f, indent=4)
 
