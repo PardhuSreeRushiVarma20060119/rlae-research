@@ -1,12 +1,6 @@
 # 📄 Research Reports
 
-This directory contains formal progress reports and experimental summaries for the RLAE & SVAR project.
-
-## Available Reports
-
-- **`report_2025-12-31`**: Milestone report for M1 & M2 verification.
-  - [.md](file:///c:/Users/pardh/Desktop/REVA4-Research-Lab/reports/report_2025-12-31.md) - Canonical Markdown Source
-  - [.pdf](file:///c:/Users/pardh/Desktop/REVA4-Research-Lab/reports/report_2025-12-31.pdf) - Professional PDF Export
+This directory contains formal progress reports and experimental summaries for the RLAE & SVAR research.
 
 ## Purpose
 
