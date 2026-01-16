@@ -1,5 +1,5 @@
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel, LoraConfig, get_peft_model
 import os
 
@@ -20,11 +20,19 @@ def load_base_model(model_id=DEFAULT_MODEL_ID):
     # Use bfloat16 if available, else float32
     torch_dtype = torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float32
     
+    # Enable 4-bit quantization (QLoRA) to save VRAM
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch_dtype,
+        bnb_4bit_use_double_quant=True
+    )
+
     device_map = "cuda" if torch.cuda.is_available() else "cpu"
     
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
-        torch_dtype=torch_dtype,
+        quantization_config=bnb_config,
         device_map=device_map,
         trust_remote_code=True
     )
