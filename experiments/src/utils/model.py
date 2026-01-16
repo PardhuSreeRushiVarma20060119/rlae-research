@@ -1,6 +1,6 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-from peft import PeftModel, LoraConfig, get_peft_model
+from peft import PeftModel, LoraConfig, get_peft_model, prepare_model_for_kbit_training
 import os
 
 # Default to a small model if not specified
@@ -28,7 +28,11 @@ def load_base_model(model_id=DEFAULT_MODEL_ID):
         bnb_4bit_use_double_quant=True
     )
 
-    device_map = "cuda" if torch.cuda.is_available() else "cpu"
+    # For QLoRA training on single GPU, specific device map is safer for Accelerate
+    if torch.cuda.is_available():
+        device_map = {"": 0} 
+    else:
+        device_map = "cpu"
     
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
@@ -87,6 +91,11 @@ def attach_lora_config(model, r=8, alpha=32, dropout=0.05):
     Attaches a fresh LoRA config for initialization (SFT start).
     """
     print("Attaching NEW LoRA adapters...")
+    # Prepare model for k-bit training if quantization is enabled
+    # This casts layers to fp32 for stability and enables gradient checkpointing
+    print("Preparing model for k-bit training...")
+    model = prepare_model_for_kbit_training(model)
+
     peft_config = LoraConfig(
         r=r,
         lora_alpha=alpha,
