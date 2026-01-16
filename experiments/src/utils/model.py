@@ -23,7 +23,12 @@ def load_base_model(model_id=DEFAULT_MODEL_ID):
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
         torch_dtype=torch_dtype,
-        device_map="auto",
+    device_map = "cuda" if torch.cuda.is_available() else "cpu"
+    
+    model = AutoModelForCausalLM.from_pretrained(
+        model_id,
+        torch_dtype=torch_dtype,
+        device_map=device_map,
         trust_remote_code=True
     )
     
