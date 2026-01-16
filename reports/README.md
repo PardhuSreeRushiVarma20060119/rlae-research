@@ -12,4 +12,4 @@ These reports synthesize raw logs from the `logs/` directory into high-level tec
 
 ---
 > [!NOTE]
-> All PDF and DOCX exports are generated from the canonical Markdown files to ensure data integrity across formats.
+> All PDF exports are generated from the canonical Markdown files to ensure data integrity across formats.
