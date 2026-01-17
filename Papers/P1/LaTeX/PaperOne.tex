@@ -327,25 +327,72 @@ Within this scope, our results characterize structural irreversibility as a fund
 \section{Experimental Setup}
 \label{sec:exp_setup}
 
-The goal of our experimental evaluation is not to maximize task performance, but to empirically assess \emph{recoverability}, \emph{identity preservation}, and \emph{structural robustness} under different adaptation paradigms. Accordingly, our experiments are designed to isolate the structural effects of adaptation and rollback, rather than to benchmark accuracy on downstream tasks.
+The goal of our experimental evaluation is not to maximize task performance, but to empirically assess \emph{recoverability}, \emph{identity preservation}, and \emph{structural robustness} under different adaptation scenarios. Accordingly, our experiments are designed to isolate the structural effects of adaptation and rollback, rather than to benchmark accuracy on downstream performance tasks.
 
 All experiments compare weight-based adaptation against reversible behavioral adaptation under controlled conditions, using identical base models, data distributions, and evaluation protocols.
-
 
 \subsection{Models}
 \label{sec:models}
 
+We conduct all experiments using a single pretrained neural model/ large language model with parameters $\theta$, treated as a fixed core identity throughout evaluation. The specific architecture and scale of the model are not central to our claims; instead, we require only that the model supports both direct weight updates and parameter-isolated behavioral adaptation.
+
+To ensure a fair comparison, the same base model initialization is used across all adaptation scenarios. For reversible behavioral adaptation, the core parameters $\theta$ are frozen, and all learning is confined to a separate behavioral parameter set $\phi$. For weight-based adaptation, updates are applied directly to $\theta$.
+
+Unless otherwise specified, no architectural changes are introduced beyond those required to support parameter isolation in the behavioral adaptation setting.
+
+
 \subsection{Adaptation Scenarios}
 \label{sec:adaptation_scenarios}
+
+We evaluate two primary adaptation paradigms:
+\begin{enumerate}
+    \item \textbf{Weight-Based Adaptation:} In the weight-based setting, adaptation is performed by directly updating the core parameter set $\theta$ using gradient-based optimization with respect to a task-specific objective. This paradigm subsumes standard fine-tuning and reinforcement learning–based post-training alignment. After adaptation, rollback is attempted using practical post-hoc procedures, including reset heuristics or partial restoration, but without access to the original parameter checkpoint unless explicitly stated.
+    \item \textbf{Reversible Behavioral Adaptation:} In the reversible setting, adaptation is performed exclusively through updates to the behavioral parameter set $\phi$, while the core parameters $\theta$ remain frozen. Behavioral parameters are attached at runtime and can be removed via the unload operator $\mathcal{K}$ defined in Section~\ref{sec:adaptation_operators}. Rollback is implemented deterministically by unloading $\phi$, yielding the original core model without approximation or retraining.
+\end{enumerate}
+
+Both paradigms are exposed to identical adaptation objectives, data, and training budgets to ensure comparability.
+
 
 \subsection{Prompt Set and Evaluation Protocol}
 \label{sec:ps_ep}
 
+To evaluate behavioral divergence and recovery, we define a fixed prompt set $\mathcal{P}$ drawn from the same distribution used during adaptation, with additional held-out prompts included to assess generalization effects. Prompts are held constant across all experimental conditions.
+
+Evaluation proceeds in three stages:
+\begin{enumerate}
+    \item \textbf{Baseline Evaluation:} The frozen base model $f(x;\theta,\emptyset)$ is evaluated on $\mathcal{P}$ to establish a reference behavioral distribution.
+    \item \textbf{Post-Adaptation Evaluation:} The adapted model $f(x;\theta',\phi)$ or $f(x;\theta,\phi)$ is evaluated to measure behavioral change induced by adaptation.
+    \item \textbf{Post-Rollback Evaluation:} Rollback is applied (via approximate reset for weight-based adaptation or unload for reversible adaptation), and the resulting model is evaluated to assess behavioral recovery.
+\end{enumerate}
+
+All divergence metrics are computed with respect to the baseline evaluation.
+
 \subsection{Metrics}
 \label{sec:metrics}
 
+We evaluate adaptation outcomes using a set of complementary metrics designed to capture behavioral divergence, recoverability, identity preservation, and structural robustness. All metrics are computed \emph{post hoc} for evaluation only and are not optimized during training or adaptation.
+
+\begin{enumerate}
+    \item \textbf{Behavioral Divergence:}
+    We quantify changes in observable behavior using the Kullback--Leibler (KL) divergence defined in Section~\ref{sec:kl_rf}. Divergence is computed between the output distributions of two model states and averaged over the fixed prompt set $\mathcal{P}$. This metric captures distribution-level behavioral deviation that may not be reflected in task accuracy alone.
+    \item \textbf{Recoverability Factor (RF):}
+    Recoverability is measured using the Recoverability Factor introduced in Section~\ref{sec:kl_rf}, which normalizes post-rollback divergence relative to the divergence induced by adaptation. RF provides a scalar measure of how completely adaptation-induced behavioral changes are eliminated after rollback, with $\mathrm{RF}=1$ indicating exact recovery.
+    \item \textbf{Identity Leakage Score (ILS):}
+    To detect localized residual deviations that may persist despite apparent global recovery, we compute prompt-level Identity Leakage Scores as defined in Section~\ref{sec:ils}. ILS is used strictly as a diagnostic tool to identify functional residue under specific prompts and is not aggregated into a single performance metric.
+    \item \textbf{Structural Variance (SVAR):}
+    To assess robustness of adaptive behavior, we compute Structural Variance as defined in Section~\ref{sec:svar} by applying bounded perturbations to the adaptive parameter set and measuring the resulting behavioral divergence. For reversible behavioral adaptation, perturbations are applied to the behavioral parameters $\phi$ with core parameters $\theta$ held fixed. For weight-based adaptation, analogous perturbations are applied to the adapted parameter state to probe sensitivity to small structural changes.
+\end{enumerate}
+
 \subsection{Implementation Details}
 \label{sec:implementation_details}
+
+All experiments are conducted using fixed random seeds to ensure reproducibility. Optimization hyper-parameters, training durations, and evaluation settings are held constant across adaptation paradigms wherever applicable.
+
+For reversible behavioral adaptation, behavioral parameters are initialized independently and attached dynamically at runtime. Rollback is implemented through explicit unloading of behavioral parameters, without modifying the core model state. For weight-based adaptation, rollback attempts do not assume access to the original pretrained checkpoint unless explicitly noted.
+
+We emphasize that no metric introduced in this work is optimized during training; all metrics are computed post hoc for evaluation and analysis only.
+
+
 
 \section{Conclusion}
 Your conclusion here
