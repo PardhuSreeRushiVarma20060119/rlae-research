@@ -1,0 +1,7 @@
+sprint,model_size,method,kl_divergence,rf_score
+Sprint-6,small,Weight Mutation,0.017140855267643928,30.0
+Sprint-6,small,Behavioral Adapter,0.0,100.0
+Sprint-6,medium,Weight Mutation,0.021216014213860036,40.0
+Sprint-6,medium,Behavioral Adapter,0.0,100.0
+Sprint-6,large,Weight Mutation,0.029669266659766436,10.0
+Sprint-6,large,Behavioral Adapter,0.0,100.0
