@@ -269,9 +269,8 @@ The Identity Leakage Score over $\mathcal{P}$ may be analyzed at the prompt leve
 or via thresholded detection,
 \[
 \mathrm{ILS}_{\mathrm{flag}}(p_i) = \mathbb{I}\!\left[ \mathrm{ILS}(p_i) > \tau \right],
-\quad \text{(for a fixed diagnostic threshold $\tau$.)}
 \]
-Here, $\mathrm{ILS}_{\mathrm{flag}}(p_i)$ is a binary indicator (“flag”) that marks whether prompt $p_i$ exhibits residual identity leakage beyond a fixed diagnostic threshold $\tau$.
+for a fixed diagnostic threshold $\tau$.
 
 Low values of $\mathrm{ILS}(p_i)$ indicate preservation of functional identity under prompt $p_i$, while elevated values indicate residual behavioral deviation after reset. Unlike global divergence measures or scalar recoverability factors, ILS captures localized functional residue that may persist despite apparent global recovery.
 
@@ -307,8 +306,28 @@ Together with recoverability, \emph{SVAR} offers a complementary perspective on 
 
 \emph{SVAR provides a diagnostic measure of behavioral stability by quantifying output variance under bounded structural perturbations of adaptive parameters, without modifying the learning process or model identity.}
 
+\subsection{Scope and Assumptions}
+\label{sec:scope}
+
+This work examines reversibility as a \emph{structural property} of neural adaptation mechanisms rather than as a consequence of specific optimization procedures, training heuristics, or alignment strategies. Accordingly, our analysis operates under a set of explicit scope boundaries and assumptions, which we state here to clarify the applicability and limitations of our results.
+
+First, we assume access to a pretrained base model whose core parameters $\theta$ can be frozen during adaptation. This assumption reflects standard deployment practice for large pretrained models, where the base model is treated as a fixed artifact and adaptation is applied post hoc. Our claims do not depend on the particular pretraining procedure or model architecture, provided that a well-defined core parameter set can be identified.
+
+Second, we assume that adaptive behavior can be represented in a parameter subspace that is structurally separable from the core parameters and admits an explicit attachment and detachment mechanism. This includes, but is not limited to, low-rank adaptation modules, adapter layers, or other parameter-isolation techniques. The existence of an explicit unload operator $\mathcal{K}$ is central to our definition of reversibility; adaptation mechanisms that lack such an operator fall outside the scope of reversible behavioral learning as defined in this work.
+
+Third, we do not assume that behavioral adaptations are benign, aligned, or semantically correct. Our analysis concerns recoverability and identity preservation, not behavioral desirability. In particular, reversible adaptation does not preclude the introduction of harmful, misleading, or adversarial behaviors; it merely ensures that such behaviors can be deterministically removed without modifying the model’s core parameters.
+
+Fourth, we do not claim that reversible behavioral adaptation eliminates catastrophic forgetting, distribution shift, or generalization failure. Rather, we show that reversible adaptation enables \emph{exact behavioral rollback} with respect to the frozen core model identity. Performance degradation during adaptation and residual errors within the behavioral component itself remain possible and are orthogonal to the notion of recoverability studied here.
+
+Finally, our evaluation assumes black-box access to model outputs for the purpose of measuring behavioral divergence. Metrics such as KL divergence, recoverability factor, identity leakage score, and structural variance are employed strictly as diagnostic tools and are not optimized during training. We do not assume access to internal activations, gradients, or privileged training signals during evaluation.
+
+Within this scope, our results characterize structural irreversibility as a fundamental limitation of shared-parameter adaptation and establish reversibility as a property that must be designed into adaptation mechanisms, rather than recovered through post hoc optimization or regularization.
+
+
 \section{Experimental Setup}
 \label{sec:exp_setup}
+
+
 
 \subsection{Models}
 \label{sec:models}
@@ -324,6 +343,12 @@ Together with recoverability, \emph{SVAR} offers a complementary perspective on 
 
 \subsection{Implementation Details}
 \label{sec:implementation_details}
+
+\section{Conclusion}
+Your conclusion here
+
+\section*{Acknowledgments}
+This was was supported in part by......
 
 %Bibliography
 \bibliographystyle{unsrt}  
