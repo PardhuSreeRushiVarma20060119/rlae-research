@@ -25,6 +25,7 @@
 % Improve table–caption spacing
 \setlength{\abovecaptionskip}{6pt}
 \setlength{\belowcaptionskip}{6pt}
+\setlength{\textfloatsep}{12pt}
 
 
 
@@ -401,130 +402,8 @@ For reversible behavioral adaptation, behavioral parameters are initialized inde
 
 We emphasize that no metric introduced in this work is optimized during training; all metrics are computed post hoc for evaluation and analysis only. Reversible behavioral adaptation constrains the locus of learning but does not introduce a new learning rule, optimizer, or continual learning algorithm.
 
-\FloatBarrier
-\section{Results}
-\label{sec:exp_results}
 
-This section presents the empirical results of the M-series experiments. All results are reported using the fixed prompt set and evaluation protocol defined in Section~\ref{sec:exp_setup}. The focus is on behavioral divergence, recoverability, identity leakage, and robustness under different adaptation paradigms.
-
-\subsection{Reversibility Under Behavioral Adaptation (RLAE)}
-\label{sec:results_rlae}
-
-We first evaluate reversible behavioral adaptation implemented via runtime-mounted LoRA adapters. After adaptation, behavioral parameters are unloaded and the model is re-evaluated against the original baseline identity.
-
-\begin{table}[htbp]
-\centering
-\caption{Post-reset divergence under reversible behavioral adaptation (RLAE).}
-\label{tab:rlae_recovery}
-\begin{tabular}{c S[table-format=1.4] c}
-\toprule
-$\epsilon$ & {Post-reset KL} & Recovery \\
-\midrule
-0.0 & 0.0599 & Partial \\
-0.2 & 0.0468 & Partial \\
-$\geq 0.6$ & 0.0000 & Exact \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-As shown in Table~\ref{tab:rlae_recovery}, unloading the behavioral adapters yields exact recovery of the baseline model once sufficient elimination is applied. For $\epsilon \geq 0.6$, the post-reset KL divergence collapses to numerical zero, indicating complete restoration of the core model identity.
-
-\FloatBarrier
-\subsection{Structural Variance and Robustness (SVAR)}
-\label{sec:results_svar}
-
-We evaluate robustness by applying bounded perturbations to the adaptive components and measuring output divergence.
-
-\begin{table}[htbp]
-\centering
-\caption{Structural Variance Analysis (SVAR) under bounded perturbations.}
-\label{tab:svar}
-\begin{tabular}{l c S[table-format=1.3]}
-\toprule
-Perturbation & Intensity & {KL Divergence} \\
-\midrule
-Layer Dropout & 0.25 & 0.001 \\
-Weight Decay & 0.10 & 0.002 \\
-Gaussian Noise & 0.01 & 0.015 \\
-\midrule
-Adversarial Tensor & 0.05 & 0.265 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-Table~\ref{tab:svar} shows that reversible behavioral adaptation exhibits high robustness to stochastic perturbations such as dropout and noise. In contrast, adversarial perturbations induce significantly larger divergence, defining the upper bound of the system’s structural stability envelope.
-
-\FloatBarrier
-\subsection{Irreversibility of Weight-Based Adaptation}
-\label{sec:results_weight}
-
-We next evaluate weight-based adaptation by directly modifying the core parameter set $\theta$ using increasing mutation intensities, followed by post-hoc reset attempts.
-
-\begin{table}[htbp]
-\centering
-\caption{Irreversibility under increasing weight mutation intensity.}
-\label{tab:mutation}
-\begin{tabular}{c S[table-format=2.3] l}
-\toprule
-$\alpha$ & {Post-reset KL} & Output Condition \\
-\midrule
-0.001 & 0.462 & Scarred but coherent \\
-0.010 & 10.928 & Severely degraded \\
-0.050 & 18.933 & Corrupted \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-Table~\ref{tab:mutation} demonstrates a monotonic increase in post-reset divergence with mutation intensity. Even minimal perturbations introduce persistent behavioral deviation, confirming the structural irreversibility of weight-based adaptation.
-
-\FloatBarrier
-\subsection{Identity Leakage and Residual Scarring}
-\label{sec:results_ils}
-
-To capture localized behavioral residue after reset, we compute prompt-level Identity Leakage Scores (ILS). Reversible behavioral adaptation yields near-zero ILS across all prompts, indicating preservation of functional identity. In contrast, weight-based adaptation produces elevated ILS values on a subset of prompts, even when global divergence appears partially reduced.
-
-These localized deviations represent \emph{identity scars}: persistent behavioral artifacts that survive reset attempts and are not fully captured by aggregate divergence metrics alone.
-
-\FloatBarrier
-\subsection{Effect of Model Scale}
-\label{sec:results_scale}
-
-Finally, we evaluate adaptation behavior across multiple model scales within the same architectural family.
-
-\begin{table}[htbp]
-\centering
-\caption{Recoverability factor across model scales.}
-\label{tab:scale}
-\begin{tabular}{c l S[table-format=3.0]}
-\toprule
-Model Scale & Adaptation Method & {RF (\%)} \\
-\midrule
-\multirow{2}{*}{1.5B} & RLAE & 100 \\
-                     & Weight Mutation & 30 \\
-\midrule
-\multirow{2}{*}{3B}   & RLAE & 100 \\
-                     & Weight Mutation & 40 \\
-\midrule
-\multirow{2}{*}{7B}   & RLAE & 100 \\
-                     & Weight Mutation & 10 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-Table~\ref{tab:scale} shows that recoverability under weight mutation degrades with increasing model scale, while reversible behavioral adaptation remains invariant. This scale-dependent divergence further supports the claim that irreversibility is a structural property of shared-parameter adaptation.
-
-\FloatBarrier
-\subsection{Summary of Experiments}
-\label{sec:results_exp}
-
-Across all conducted experiments, a clear and consistent structural asymmetry emerges between weight-based adaptation and reversible behavioral adaptation. When adaptive behavior is confined to structurally isolated, runtime-controlled components, the system exhibits exact and deterministic rollback: unloading the behavioral parameters reliably restores the model to its original baseline behavior, with post-reset divergence collapsing to numerical zero across prompts, model scales, and evaluation runs. This behavior is not an artifact of optimization quality or training budget, but a direct consequence of the architectural separation between core identity parameters and adaptive behavior.
-
-
-\section{Results}
+\section{Experimental Results}
 \label{sec:results}
 
 This section presents the empirical results of the M-series experiments.
@@ -670,7 +549,6 @@ In contrast, reversible behavioral adaptation maintains exact recovery across al
 \subsection{Summary of Results}
 
 Across all experiments, recoverability consistently emerges as a structural property of neural adaptation rather than an optimization artifact. Adaptation mechanisms that operate through direct modification of shared parameters introduce persistent, scale-dependent behavioral scarring that cannot be reliably undone through post-hoc procedures. In contrast, reversible behavioral adaptation achieves exact and deterministic rollback by construction, preserving the base model identity across tasks, perturbations, and model scales. Together, these results empirically establish structural reversibility as a necessary design property for safe, controllable, and long-lived adaptive neural systems.
-
 
 
 \section{Conclusion}
