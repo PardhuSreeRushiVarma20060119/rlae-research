@@ -1,8 +1,12 @@
-\begin{tabular}{lcc}
-\toprule
-Adaptation Method & Post-reset KL & RF (\%) \\
-\midrule
-Weight-based Adaptation & $>1.0$ & $\approx 0$ \\
-Reversible Behavioral (RLAE) & $<10^{-6}$ & 100 \\
-\bottomrule
-\end{tabular}
+\begin{table}[H]
+	\centering
+	\footnotesize
+	\begin{tabular}{ccc}
+		\toprule
+		Adaptation Method & Mean Post-reset KL & RF (\%) \\
+		\midrule
+		Weight-based ($\alpha = 0.05$) & 18.574 & 0 \\
+		Reversible ($\varepsilon \geq 0.6$) & $< 10^{-6}$ & 100 \\
+		\bottomrule
+	\end{tabular}
+\end{table}

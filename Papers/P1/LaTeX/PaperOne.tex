@@ -14,6 +14,7 @@
 \usepackage{lipsum}
 \usepackage{fancyhdr}       % header
 \usepackage{graphicx}       % graphics
+\usepackage{subcaption}
 \graphicspath{{media/}}     % organize your images and other figures under media/ folder
 \usepackage{placeins}   % Float barriers
 \usepackage{float}      % Optional, controlled use only
@@ -402,7 +403,6 @@ For reversible behavioral adaptation, behavioral parameters are initialized inde
 
 We emphasize that no metric introduced in this work is optimized during training; all metrics are computed post hoc for evaluation and analysis only. Reversible behavioral adaptation constrains the locus of learning but does not introduce a new learning rule, optimizer, or continual learning algorithm.
 
-
 \section{Experimental Results}
 \label{sec:results}
 
@@ -411,14 +411,34 @@ For each experiment, we report (i) a diagnostic figure, (ii) a numerical table,
 and (iii) a concise interpretation.
 
 % =========================================================
+
 \subsection{Exact Rollback via Behavioral Elimination}
 \label{sec:elim}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.88\linewidth]{figures/fig_exact_rollback.pdf}
-    \caption{Exact rollback via behavioral elimination. Mean post-reset KL divergence collapses to numerical zero once the elimination rate exceeds a critical threshold $\epsilon^\ast$.}
-    \label{fig:elim}
+\begin{figure}[htbp]
+	\centering
+	
+	\begin{subfigure}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/fig_exact_rollback.pdf}
+		\caption{Entropy before vs. after reset across runs.}
+		\label{fig:elim_entropy}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/fig_exact_rollback_2.pdf}
+		\caption{Mean post-reset KL divergence vs. elimination rate $\varepsilon$.}
+		\label{fig:elim_kl}
+	\end{subfigure}
+	
+	\caption{
+		Exact rollback via behavioral elimination. 
+		(Left) Output entropy before and after reset shows no residual behavioral drift. 
+		(Right) Mean post-reset KL divergence exhibits a sharp threshold collapse at 
+		$\varepsilon^\ast = 0.6$, marking the transition from partial to exact recovery.
+	}
+	\label{fig:elim_combined}
 \end{figure}
 
 \begin{table}[H]
@@ -432,7 +452,15 @@ and (iii) a concise interpretation.
 
 \FloatBarrier
 
-Figure~\ref{fig:elim} demonstrates the effect of progressive behavioral elimination on post-reset divergence under reversible behavioral adaptation. As the elimination rate $\epsilon$ increases, the mean post-reset KL divergence decreases monotonically, reflecting the systematic removal of adaptive behavioral capacity from the model. This behavior indicates that adaptation-induced divergence is localized within the removable behavioral component rather than entangled with the frozen core parameters.
+Figure~\ref{fig:elim_combined} illustrates exact rollback under progressive behavioral elimination. 
+The entropy comparison (Figure~\ref{fig:elim_entropy}) confirms distributional restoration 
+at the run level, while the KL divergence curve (Figure~\ref{fig:elim_kl}) reveals a sharp 
+threshold collapse at $\varepsilon^\ast = 0.6$, beyond which post-reset divergence falls 
+to numerical zero.
+
+We define \emph{exact recovery} as the regime in which the post-reset KL divergence falls below $10^{-6}$, corresponding to numerical precision limits. The emergence of this threshold behavior indicates that adaptation-induced divergence resides within the removable behavioral parameter subspace. Once sufficient behavioral components are eliminated, no residual divergence remains, implying that the frozen core parameters remain unaffected by adaptation.
+
+These results empirically support the structural reversibility of behavioral adaptation: rollback is exact not by optimization quality, but by architectural separation.
 
 
 % =========================================================
@@ -466,13 +494,6 @@ Unlike reversible behavioral elimination, no mutation regime exhibits a collapse
 \subsection{Recoverability Collapse: Weight-Based vs Reversible Adaptation}
 \label{sec:rf}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.88\linewidth]{figures/fig_structural_recov.pdf}
-    \caption{Structural collapse of recoverability. Weight-based adaptation exhibits irreversible scarring, while reversible behavioral adaptation achieves exact rollback.}
-    \label{fig:rf}
-\end{figure}
-
 \begin{table}[H]
     \centering
     \footnotesize
@@ -484,53 +505,53 @@ Unlike reversible behavioral elimination, no mutation regime exhibits a collapse
 
 \FloatBarrier
 
-Figure~\ref{fig:rf} contrasts the recoverability of weight-based adaptation with reversible behavioral adaptation using the recoverability factor (RF). Across all evaluated settings, weight-based adaptation yields near-zero recoverability, indicating that post-reset behavior remains closer to the adapted state than to the original baseline. This behavior is consistent with persistent identity scarring observed in the post-reset divergence measurements.
+Table~\ref{tab:rfc} contrasts the recoverability of weight-based adaptation with reversible behavioral adaptation using the recoverability factor (RF). Across all evaluated settings, weight-based adaptation yields near-zero recoverability, indicating that post-reset behavior remains closer to the adapted state than to the original baseline. This behavior is consistent with persistent identity scarring observed in the post-reset divergence measurements.
 
 In contrast, reversible behavioral adaptation consistently achieves $\mathrm{RF}=100\%$, corresponding to exact restoration of baseline behavior after rollback. This stark separation between adaptation paradigms highlights a structural collapse of recoverability in shared-parameter learning. Importantly, this collapse is not sensitive to task type, prompt distribution, or training budget, reinforcing the conclusion that recoverability is determined by the structural locus of adaptation rather than by optimization quality or regularization strategy.
 
 % =========================================================
-\subsection{Baseline Identity Stability Across Sprints}
+\subsection{Baseline Identity and Stability Across Sprints}
 \label{sec:baseline}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.88\linewidth]{figures/fig_baseline_entropy.pdf}
-    \caption{Baseline output entropy across sprints. No systematic drift is observed.}
-    \label{fig:baseline}
+Before evaluating adaptation-induced divergence, it is necessary to verify that the frozen base model itself remains stable across experimental runs. Any systematic drift in baseline behavior would confound post-reset divergence measurements and weaken causal attribution to the adaptation mechanism. To rule out this possibility, we measure the output entropy of the unchanged base model across all sprints under identical evaluation conditions.
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=0.88\linewidth]{figures/fig_baseline_entropy.pdf}
+	\caption{Baseline output entropy across sprints. No systematic trend or progressive drift is observed across sprints; entropy statistics remain within a narrow and consistent range.}
+	\label{fig:baseline}
 \end{figure}
 
-\begin{table}[H]
-    \centering
-    \footnotesize
-    \input{tables/tab_baseline_entropy.tex}
-    \vspace{5pt}
-    \caption{Baseline entropy statistics across sprints.}
-    \label{tab:baselinexp}
+\begin{table}[t]
+	\centering
+	\footnotesize
+	\input{tables/tab_baseline_entropy.tex}
+	\vspace{5pt}
+	\caption{Baseline entropy statistics across sprints.}
+	\label{tab:baselinexp}
 \end{table}
 
 \FloatBarrier
 
-Figure~\ref{fig:baseline} reports the output entropy of the frozen base model evaluated across all experimental sprints. Both the mean entropy and its variance remain stable over time, with no systematic trend or drift observed. This stability confirms that the base model identity remains unchanged across the experimental pipeline.
+Figure~\ref{fig:baseline} reports the output entropy of the frozen base model evaluated across all experimental sprints. Both the mean entropy and its variance remain within a narrow range, with no systematic monotonic trend observed. These results confirm that the core model identity remains unchanged throughout the experimental pipeline.
 
-By ruling out baseline identity drift, these results eliminate a key confounding factor in the interpretation of post-reset divergence. The observed differences between adaptation paradigms therefore cannot be attributed to changes in the underlying model or evaluation distribution, but must instead arise from the structural properties of the adaptation mechanisms themselves.
-
-In simple terms, this experiment verifies that the base model itself remains stable throughout all experimental runs. The output entropy of the frozen model does not change across sprints, indicating that neither the model nor the evaluation setup drifts over time. This confirms that the baseline behavior is consistent and reliable.
-
-As a result, any divergence observed after adaptation and reset cannot be explained by accidental changes in the base model or data distribution. Instead, the differences we observe directly reflect the effects of the adaptation mechanisms being tested. This validation step ensures that our conclusions about reversibility and irreversibility are not influenced by hidden baseline instability.
+By ruling out baseline identity drift, this analysis eliminates a key confounding factor in the interpretation of post-reset divergence. The observed differences between adaptation paradigms are therefore attributable to the structural properties of the respective adaptation mechanisms rather than to unintended changes in the underlying model or evaluation setup.
 
 
 % =========================================================
 \subsection{Recoverability Across Model Scales}
 \label{sec:multimodel}
 
-\begin{figure}[H]
+A potential objection to the structural reversibility hypothesis is that recoverability may depend on model capacity rather than on the locus of adaptation. Larger models possess higher parameter dimensionality and greater representational redundancy, which could, in principle, affect rollback behavior. To evaluate whether recoverability is a function of model scale or a structural property of the adaptation mechanism itself, we measure post-reset divergence and recoverability factor across multiple model sizes within the same architectural family.
+
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.88\linewidth]{figures/fig_recoverability_model_scale.pdf}
     \caption{Recoverability across model scales. Reversible behavioral adaptation remains invariant, while weight mutation degrades with scale.}
     \label{fig:multimodel}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[t]
     \centering
     \footnotesize
     \input{tables/tab_multimodel.tex}
