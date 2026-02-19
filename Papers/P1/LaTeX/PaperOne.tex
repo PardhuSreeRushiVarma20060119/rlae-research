@@ -491,7 +491,7 @@ Unlike reversible behavioral elimination, no mutation regime exhibits a collapse
 
 
 % =========================================================
-\subsection{Recoverability Collapse: Weight-Based vs Reversible Adaptation}
+\subsection{Comparative Recoverability: Weight-Based vs Reversible Adaptation}
 \label{sec:rf}
 
 \begin{table}[H]
@@ -546,7 +546,7 @@ A potential objection to the structural reversibility hypothesis is that recover
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.88\linewidth]{figures/fig_recoverability_model_scale.pdf}
+    \includegraphics[width=0.77\linewidth]{figures/fig_recoverability_model_scale.pdf}
     \caption{Recoverability across model scales. Reversible behavioral adaptation remains invariant, while weight mutation degrades with scale.}
     \label{fig:multimodel}
 \end{figure}
@@ -572,7 +572,78 @@ In contrast, reversible behavioral adaptation maintains exact recovery across al
 Across all experiments, recoverability consistently emerges as a structural property of neural adaptation rather than an optimization artifact. Adaptation mechanisms that operate through direct modification of shared parameters introduce persistent, scale-dependent behavioral scarring that cannot be reliably undone through post-hoc procedures. In contrast, reversible behavioral adaptation achieves exact and deterministic rollback by construction, preserving the base model identity across tasks, perturbations, and model scales. Together, these results empirically establish structural reversibility as a necessary design property for safe, controllable, and long-lived adaptive neural systems.
 
 
+\section{Analysis and Discussion}
+\label{sec:analysis}
+
+The empirical results presented in Section~\ref{sec:results} reveal a consistent structural separation between irreversible shared-parameter adaptation and reversible behavioral isolation. These differences persist across mutation intensities, elimination thresholds, model scales, and evaluation conditions. In this section, we analyze the mechanisms underlying this divergence. We focus not on optimization heuristics, but on the structural properties of parameter organization that determine whether adaptive changes can be undone. This perspective re-frames reversibility as an architectural property rather than a training artifact.
+
+\subsection{Why Weight-Based Adaptation Is Irreversible}
+\label{sec:analysis_irreversibility}
+
+The empirical results in Section~\ref{sec:results} demonstrate that direct modification of shared model parameters produces persistent post-reset divergence across all evaluated settings. This behavior follows from two structural properties of weight-based adaptation: gradient interference and objective entanglement.
+
+First, gradient interference arises because multiple behaviors are encoded within a shared parameter substrate. Prior work in continual learning has shown that sequential updates applied to shared parameters induce interference between tasks, reflecting the stability--plasticity dilemma \cite{kirkpatrick2017ewc,delange2021continual}. Updates introduced to satisfy a new objective necessarily perturb representations supporting prior behaviors. Even when updates are small in magnitude, their effects may propagate non-locally due to overlapping internal feature representations.
+
+Second, objective entanglement occurs because the same parameter tensor simultaneously encodes foundational capabilities and task-specific adaptations. Mechanistic analyses suggest that neural networks often represent multiple features in superposed or entangled forms within shared dimensions \cite{elhage2022superposition}. Once modified, such entangled parameters no longer admit a clean separation between original and adapted behavior. As a result, no deterministic inverse operation exists that can restore the model’s prior functional state without access to an explicit checkpoint.
+
+The systematic increase in post-reset divergence under weight mutation (Section~\ref{sec:weight}) and the comparative recoverability measurements (Section~\ref{sec:rf}) empirically substantiate this structural irreversibility.
+
+
+\subsection{Emergent Risks of Unbounded Learning in Shared Representational Spaces}
+\label{sec:analysis_emergence}
+
+We define emergence in this context as the development of new behavioral patterns arising from iterative adaptation within a shared representational substrate. Empirical studies of large language models have shown that increasing scale and training complexity can give rise to new capabilities that are not trivially predictable from smaller systems \cite{wei2022emergent}. While some analyses argue that such emergence may partially reflect evaluation thresholds rather than discontinuous internal changes \cite{schaeffer2023mirage}, it remains clear that shared-parameter scaling produces increasingly complex internal feature interactions.
+
+Because shared representations encode multiple capabilities simultaneously, unbounded learning within this space increases the degree of representational entanglement. As entanglement grows, behavioral changes become progressively more difficult to localize or reverse. Mechanistic evidence suggests that feature superposition within shared parameter spaces may further amplify such coupling effects \cite{elhage2022superposition}.
+
+Irreversibility amplifies this structural coupling. Once adaptation-induced modifications are absorbed into the core parameter space, their downstream consequences may persist even after the original objective is removed. This creates a structural asymmetry: behavioral acquisition is straightforward, but behavioral removal becomes increasingly constrained.
+
+Empirical results in Section~\ref{sec:results} show that recoverability degrades under shared-parameter mutation and does not improve with model scale. These findings suggest that unbounded learning in shared representational spaces may accumulate irreversible behavioral residue over time. Importantly, this risk arises from architectural coupling rather than from specific optimization choices, highlighting the governance challenges associated with long-lived adaptive systems lacking explicit rollback mechanisms.
+
+
+\subsection{Why Behavioral Separation Works}
+\label{sec:analysis_separation}
+
+Reversible behavioral adaptation avoids structural irreversibility by constraining the locus of learning. By isolating adaptive parameters from the core identity substrate, behavioral modifications are confined to a removable parameter subspace rather than being absorbed into shared representational weights.
+
+Architectural isolation strategies have previously demonstrated that restricting parameter overlap across tasks mitigates destructive interference \cite{rusu2016progressive,mallya2018packnet}. More recent parameter-efficient fine-tuning methods, including adapters and low-rank adaptation, further illustrate that behavioral modification can be localized within constrained parameter additions while leaving the base model unchanged \cite{houlsby2019adapter,hu2021lora}. These approaches implicitly reduce entanglement by separating task-specific parameters from foundational representations.
+
+Reversible behavioral adaptation extends this principle by introducing explicit unload semantics. Because adaptive parameters are structurally decoupled from the identity-defining core parameters, rollback does not require approximation, retraining, or checkpoint restoration. Instead, the unload operator provides a deterministic mechanism for restoring the model to its baseline functional state. Emerging work on formal parameter isolation guarantees supports the theoretical plausibility of such structural separation \cite{lanzillotta2023isolation}.
+
+The empirical elimination of post-reset divergence under behavioral removal (Section~\ref{sec:elim}) and the invariance of recoverability across model scales (Section~\ref{sec:multimodel}) demonstrate that reversibility is achieved by construction. Exact recovery is therefore not the result of improved optimization but of architectural separation.
+
+More broadly, these results suggest that controllability in adaptive systems arises not from increasingly sophisticated training procedures, but from explicit structural boundaries between identity parameters and behavioral artifacts.
+
+\subsection{Relationship to Catastrophic Forgetting}
+\label{sec:analysis_forgetting}
+
+Catastrophic forgetting has traditionally been framed as a statistical phenomenon arising from sequential optimization under non-stationary objectives \cite{kirkpatrick2017ewc,delange2021continual}. Prior work emphasizes stability--plasticity trade-offs and proposes regularization, replay, or architectural strategies to mitigate performance degradation on earlier tasks.
+
+Our results suggest a complementary structural interpretation. Forgetting may be viewed as a consequence of irreversible shared-parameter adaptation. When multiple objectives are encoded within a single parameter substrate, new updates inevitably overwrite or distort representations supporting prior behaviors. Analyses of interference patterns in continual learning further support the view that shared parameters serve as a conduit for cross-task disruption \cite{kaushik2021rmn}.
+
+From this perspective, forgetting is not solely an optimization failure, but a manifestation of structural coupling within the representational substrate. Parameter isolation approaches such as Progressive Neural Networks and iterative pruning methods reduce forgetting by limiting parameter overlap across tasks \cite{rusu2016progressive,mallya2018packnet}. However, most such approaches were not designed with rollback or identity preservation as explicit objectives.
+
+Reversible behavioral adaptation extends this structural framing by enforcing complete separation between identity-defining parameters and adaptive artifacts. This separation enables not only retention of prior capabilities, but deterministic recoverability to a baseline identity state.
+
+\subsection{Implications for Safe and Long-Lived Models}
+\label{sec:analysis_implications}
+
+Long-lived adaptive systems require not only performance optimization but sustained controllability over time. Prior discussions of AI safety have emphasized the importance of oversight, corrigibility, and reliable behavioral control in deployed systems \cite{amodei2016concrete}. Structural irreversibility directly constrains these objectives by limiting the ability to audit, rollback, or govern behavioral changes introduced through shared-parameter adaptation.
+
+Reversible behavioral learning provides three practical advantages:
+
+\begin{enumerate}
+	\item \textbf{Deterministic Rollback:} Behavioral modifications can be removed without retraining, gradient inversion, or checkpoint restoration.
+	\item \textbf{Controllability:} Adaptive behaviors exist as bounded artifacts that can be attached, detached, versioned, and audited independently of the core model identity.
+	\item \textbf{Governance:} Structural separation enables explicit lifecycle management of learned behaviors, reducing the accumulation of irreversible behavioral residue over extended deployment horizons.
+\end{enumerate}
+
+These properties suggest that reversibility should be treated as a first-class architectural design criterion for adaptive neural systems. As models increase in scale, complexity, and deployment duration, structural guarantees of recoverability may become increasingly important for system maintainability, compliance, and long-term behavioral stability.
+
+
 \section{Conclusion}
+\label{sec:conclusion}
+
 Your conclusion here
 
 \section*{Acknowledgments}
