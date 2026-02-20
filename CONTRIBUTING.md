@@ -1,6 +1,6 @@
-# Contributing to AI-RDE-Repo (RLAE & SVAR)
+# Contributing to REVA4 Research (RLAE & SVAR)
 
-Thank you for your interest in contributing to **AI-RDE-Repo**, a research-focused repository exploring **Runtime Low-Rank Adaptive Environments (RLAE)** and **Structural Variance Analysis for Robustness (SVAR)**.
+Thank you for your interest in contributing to **REVA4 Research**, a research-focused repository exploring **Runtime Low-Rank Adaptive Environments (RLAE)** and **Structural Variance Analysis for Robustness (SVAR)**.
 
 This repository is **research-grade**, **safety-critical**, and **theory-driven**.  
 Contributions are welcome — but only if they respect the core principles of the project.
@@ -11,7 +11,7 @@ Please read this document carefully before opening an issue or pull request.
 
 ## 🧠 Project Philosophy
 
-AI-RDE-Repo is built on the following non-negotiable principles:
+REVA4 Research is built on the following non-negotiable principles:
 
 - **Frozen Core Invariance**  
   The base model must remain strictly immutable.
@@ -149,6 +149,6 @@ It is about making intelligence:
 If your contribution strengthens that goal — it is welcome.
 If it weakens it — it will be rejected.
 
-— *AI-RDE Maintainer - Pardhu Varma Konduru*
+— *REVA4 Research Maintainer - Pardhu Varma Konduru*
 
 
