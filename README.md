@@ -68,14 +68,14 @@ At no point is the base model mutated.
 
 ## 🚀 Cloud Execution Guide (Google Colab T4)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](
-https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Repository/blob/main/colab-experiments/Stage1_Experiments.ipynb
-)
+This repository is provided for reproducibility purposes accompanying the published paper. It is pre-configured for execution on NVIDIA T4/L4 GPUs.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Repository/blob/main/colab-experiments/Stage1_Experiments.ipynb)
 
 ### 🛠️ Infrastructure & Environment
 
 - **Primary Compute:** Google Colab (NVIDIA T4, 16GB VRAM)
-- **Integration:** Official Google Colab GitHub App for bidirectional synchronization
+- **Environment Bundle:** [REVA4-Research-Lab-Cloud.zip](file:///home/zenrage/Desktop/Research/REVA4%20Research/REVA4-Research-Lab/REVA4-Research-Lab-Cloud.zip) (Required for full experimental environment)
 
 ---
 
@@ -83,26 +83,17 @@ https://colab.research.google.com/github/PardhuSreeRushiVarma20060119/AI-RDE-Rep
 
 To ensure scientific rigor and repeatability, all RLAE evaluations must pass the following validation suite:
 
-- **M1 — Repeatability Run:** Verification of repeatable outcomes using a standardized global seed (`1337`). Ensures that results are a property of the architecture, independent of stochastic initial states.
-- **M2 — No-Op Control:** Metric grounding run using the `--control` flag. Confirms that mounting and immediately unmounting an *un-trained* adapter yields `KL ≈ 0` and `RF = 100%`.
+- **M1 — Repeatability Run:** Verification of repeatable outcomes using a standardized global seed (`1337`).
+- **M2 — No-Op Control:** Metric grounding run using the `--control` flag (`KL ≈ 0`, `RF = 100%`).
 - **M3 — Intensity Sweep:** Evaluation of recoverability across increasing mutation magnitudes (ε-scaling).
 - **M4 — Multi-Model Path:** Cross-verification of structural invariance on different base model scales.
 - **M5 — Metric Grounding:** Direct correlation analysis between ILS, KL, and standard perplexity (PPL).
 
 ---
 
-## 🚀 Cloud Execution Guide (Google Colab)
+## ⚡ Atomic Validation Protocols
 
-### 🛠️ Infrastructure & Environment
-
-- **Platform:** Google Colab (T4/L4 GPU)
-- **Archive:** `REVA4-Research-Lab-Cloud.zip` (Contains pre-configured seed locking and control flags)
-
-### **Atomic Validation Protocols**
-
-### **Atomic Validation Protocols**
-
-The RLAE framework is verified through independent, reproducible protocols that can be executed in any order (post-setup). These protocols map directly to the **Canonical Cell Roles (C0-C8)** defined in the `M-Series` research notebooks.
+The RLAE framework is verified through independent, reproducible protocols that map to the **Canonical Cell Roles (C0-C8)** defined in the research notebooks.
 
 #### **Protocol A: Environment Initialization (C0)**
 
@@ -115,15 +106,10 @@ The RLAE framework is verified through independent, reproducible protocols that 
 
 #### **Protocol B: Metric Grounding & Control (M2/C1)**
 
-*Verifies the toolchain's neutral baseline and seed locking.*
-
-- **Objective:** Verify "Identity Zero" baseline before training.
 - **Command:** `!python src/exp5_comparison/irreversibility_test.py --control`
 - **Output:** Confirms `KL ≈ 0.0000` | `RF = 100%` (No-Op Control).
 
 #### **Protocol C: Behavioral Construction (C4)**
-
-*Injects specific behaviors via RLAE adapters.*
 
 - **Phase 1 (Baseline):** `!python src/exp1_reset/1_baseline.py`
 - **Phase 2 (SFT):** `!python src/exp1_reset/2_train_sft.py`
@@ -131,35 +117,23 @@ The RLAE framework is verified through independent, reproducible protocols that 
 
 #### **Protocol D: Structural Verification (M1/C6)**
 
-*The primary proof of structural invariance (Repeatability).*
-
 - **Comparative Proof:** `!python src/exp5_comparison/irreversibility_test.py`
 - **Reset Check:** `!python src/exp1_reset/4_verify_reset.py`
-- **Pass Criteria:** Structural outcomes match baseline signatures within ε-bounds.
 
 #### **Protocol E: Advanced Diagnostics (SVAR/C5)**
 
-*Stress-tests the behavioral boundaries and stability envelopes (M3).*
-
 - **Structural Elimination:** `!python src/exp2_rlae/elimination_test.py`
 - **Perturbation Analysis:** `!python src/exp3_svar/perturbation.py`
-- **ILS Stage 2:** Checks specific identity leakage thresholds (from `Stage2_ILS` notebooks).
+- **ILS Analysis:** Stage 2 identity leakage thresholds.
 
 #### **Protocol F: Runtime Reliability (Stress/M4)**
 
-*Ensures rigorous availability under load across model scales.*
-
-- **Stress Test:** `!python src/exp4_stress/stress_single_run.py` (100-cycle inference load)
+- **Stress Test:** `!python src/exp4_stress/stress_single_run.py`
 
 #### **Protocol G: Canonical Reporting (C8/M5)**
 
-*Synthesizes all telemetry into a final report.*
-
 - **Command:** `!python src/verification/robustness_suite.py`
 - **Artifact:** Generates `canonical_diagnostic_results.tar.gz`.
-
-> [!NOTE]
-> Refer `colab-experiments/` folder for detailed understanding of latest notebook workflows and protocol descriptions.
 
 ---
 
@@ -167,16 +141,18 @@ The RLAE framework is verified through independent, reproducible protocols that 
 
 ```text
 ├── arts/               # Research diagrams and visual assets
-├── colab-experiments/  # Jupyter notebooks for cloud execution (T4/L4)
+├── colab-experiments/  # Jupyter notebooks for cloud execution
 ├── experiments/        # Core execution environment and local scripts
 │   ├── data/           # Local datasets and indices
 │   ├── logs/           # Experiment logs and telemetry
 │   ├── models/         # Quantized model artifacts
 │   └── src/            # Experimental logic and RLAE/SVAR implementation
-├── project-scope/      # Documentation on research boundaries
-├── reports/            # Markdown and PDF research reports
+├── project-scope/*     # Research boundaries (Included in Cloud Zip)
+├── reports/*           # Research reports (Included in Cloud Zip)
 └── WALKTHROUGH.md      # Detailed roadmap and technical guide
 ```
+
+*\*Note: Directories marked with an asterisk are excluded from this GitHub repository to maintain focus on the core reproducibility logic but are preserved in the `REVA4-Research-Lab-Cloud.zip` archive.*
 
 > [!NOTE]
 > This repository is designed for **repeatable research**. All experiments are logged with timestamps and hardware telemetry to ensure outcome-level consistency across different CUDA environments.
