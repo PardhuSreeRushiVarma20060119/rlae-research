@@ -28,6 +28,46 @@ def calculate_kl_divergence(p_logits, q_logits):
     kl = torch.sum(p_probs * (torch.log(p_probs + 1e-10) - torch.log(q_probs + 1e-10)), dim=-1)
     return kl.mean().item()
 
+def calculate_js_divergence(p_logits, q_logits, eps=1e-10):
+    """
+    Computes Jensen–Shannon (JS) divergence between two model output distributions.
+
+    This function serves as a symmetric and bounded robustness alternative to
+    KL divergence when evaluating behavioral drift between a reference model
+    and a perturbed/adapted model.
+
+    Implementation details:
+    - Logits are converted to probability distributions via softmax.
+    - Numerical smoothing (epsilon) is applied to prevent instability in
+      low-probability regions.
+    - Distributions are renormalized after clamping.
+    - JS divergence is computed as:
+
+          JS(P, Q) = 0.5 * KL(P || M) + 0.5 * KL(Q || M)
+
+      where M = 0.5 * (P + Q)
+
+    Properties:
+    - Symmetric: JS(P, Q) = JS(Q, P)
+    - Bounded: 0 <= JS <= log(2)
+    - Less sensitive to zero-probability singularities than KL
+
+    In this code section, JS divergence is used to verify that recoverability
+    behavior is invariant to divergence metric choice and not an artifact
+    of KL asymmetry.
+    """
+    p_probs = torch.nn.functional.softmax(p_logits, dim=-1).float()
+    q_probs = torch.nn.functional.softmax(q_logits, dim=-1).float()
+    p_probs = torch.clamp(p_probs, eps, 1.0)
+    q_probs = torch.clamp(q_probs, eps, 1.0)
+    p_probs = p_probs / p_probs.sum(dim=-1, keepdim=True)
+    q_probs = q_probs / q_probs.sum(dim=-1, keepdim=True)
+    m = 0.5 * (p_probs + q_probs)
+    kl_pm = torch.sum(p_probs * (torch.log(p_probs) - torch.log(m)), dim=-1)
+    kl_qm = torch.sum(q_probs * (torch.log(q_probs) - torch.log(m)), dim=-1)
+    js = 0.5 * (kl_pm + kl_qm)
+    return js.mean().item()
+
 def calculate_ils(base_metrics, target_metrics):
     """
     Calculates the Identity Leakage Score (ILS).

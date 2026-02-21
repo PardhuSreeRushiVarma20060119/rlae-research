@@ -67,6 +67,9 @@ Modern neural models are commonly adapted through direct modification of model p
 \label{sec:intro}
 This paper examines the structural properties of neural adaptation mechanisms under sequential learning. We focus on the relationship between parameter modification, behavioral stability, and recoverability, and outline our empirical findings and contributions below.
 
+\noindent\textbf{Code Availability:} 
+The implementation and experiments supporting this work are publicly available. \cite{Varma2026rlae}.
+
 \subsection{Motivation} % why the problem exists
 \label{sec:motivation}
 
@@ -257,9 +260,15 @@ Using this divergence measure, we define the \emph{Recoverability Factor} (RF) a
 
 where $f_{\mathrm{adapt}}$ denotes the adapted model and $f_{\mathrm{rec}}$ denotes the model after rollback. The recoverability factor satisfies $\mathrm{RF} \in [0,1]$, with $\mathrm{RF} = 1$ indicating exact behavioral recovery and $\mathrm{RF} = 0$ indicating no recovery relative to the adapted state.
 
+In the special case where post-reset divergence falls below numerical precision limits, the recoverability factor evaluates to $\mathrm{RF} = 1$ within machine precision, corresponding to exact behavioral restoration under the evaluation distribution.
+
 In weight-based adaptation, rollback typically relies on approximate procedures or retraining, leading to non-zero post-reset divergence and $\mathrm{RF} < 1$. In contrast, reversible behavioral adaptation admits deterministic rollback through the unload operator, yielding near-zero divergence and $\mathrm{RF} \approx 1$ in practice.
 
 Throughout our experiments, we report both KL divergence and recoverability factor to distinguish between irreversible behavioral drift and structurally reversible adaptation. This allows recoverability to be treated as a first-class evaluation criterion, complementary to conventional performance metrics.
+
+In addition to KL divergence, we compute Jensen–Shannon (JS) divergence as a symmetric and bounded confirmation metric. While KL captures directional distributional drift, JS provides a numerically stable measure of distributional similarity that is less sensitive to tail amplification. The use of both metrics ensures that recoverability claims are not artifacts of KL asymmetry or support mismatch.
+
+It is important to note that divergence is evaluated with respect to a fixed prompt distribution and finite-precision numerical representation. Thus, exact recovery in this work refers to distributional equivalence under the evaluation protocol rather than strict parameter-level equality. Zero divergence indicates that no observable behavioral deviation remains within the measurement resolution.
 
 \subsection{Identity Leakage Score (ILS)}
 \label{sec:ils}
@@ -385,6 +394,8 @@ We evaluate adaptation outcomes using a set of complementary metrics designed to
 \begin{enumerate}
     \item \textbf{Behavioral Divergence:}
     We quantify changes in observable behavior using the Kullback--Leibler (KL) divergence defined in Section~\ref{sec:kl_rf}. Divergence is computed between the output distributions of two model states and averaged over the fixed prompt set $\mathcal{P}$. This metric captures distribution-level behavioral deviation that may not be reflected in task accuracy alone.
+    
+    Unlike task accuracy, which may remain stable despite internal representational drift, divergence-based metrics capture fine-grained distributional shifts that reveal structural changes in model identity.
     \item \textbf{Recoverability Factor (RF):}
     Recoverability is measured using the Recoverability Factor introduced in Section~\ref{sec:kl_rf}, which normalizes post-rollback divergence relative to the divergence induced by adaptation. RF provides a scalar measure of how completely adaptation-induced behavioral changes are eliminated after rollback, with $\mathrm{RF}=1$ indicating exact recovery.
     \item \textbf{Identity Leakage Score (ILS):}
@@ -402,6 +413,13 @@ For reversible behavioral adaptation, behavioral parameters are initialized inde
 
 We emphasize that no metric introduced in this work is optimized during training; all metrics are computed post hoc for evaluation and analysis only. Reversible behavioral adaptation constrains the locus of learning but does not introduce a new learning rule, optimizer, or continual learning algorithm.
 
+\vfill
+\begin{center}
+	\textit{(Continued on next page)}
+\end{center}
+
+\pagebreak
+
 \section{Experimental Results}
 \label{sec:results}
 
@@ -414,7 +432,7 @@ and (iii) a concise interpretation.
 \subsection{Exact Rollback via Behavioral Elimination}
 \label{sec:elim}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 	\centering
 	
 	\begin{subfigure}{0.48\linewidth}
@@ -457,7 +475,7 @@ at the run level, while the KL divergence curve (Figure~\ref{fig:elim_kl}) revea
 threshold collapse at $\varepsilon^\ast = 0.6$, beyond which post-reset divergence falls 
 to numerical zero.
 
-We define \emph{exact recovery} as the regime in which the post-reset KL divergence falls below $10^{-6}$, corresponding to numerical precision limits. The emergence of this threshold behavior indicates that adaptation-induced divergence resides within the removable behavioral parameter subspace. Once sufficient behavioral components are eliminated, no residual divergence remains, implying that the frozen core parameters remain unaffected by adaptation.
+We define exact recovery as the regime in which both KL and JS divergence fall below $10^{-6}$, corresponding to numerical precision limits.
 
 These results empirically support the structural reversibility of behavioral adaptation: rollback is exact not by optimization quality, but by architectural separation.
 
@@ -506,6 +524,8 @@ Unlike reversible behavioral elimination, no mutation regime exhibits a collapse
 
 Table~\ref{tab:rfc} contrasts the recoverability of weight-based adaptation with reversible behavioral adaptation using the recoverability factor (RF). Across all evaluated settings, weight-based adaptation yields near-zero recoverability, indicating that post-reset behavior remains closer to the adapted state than to the original baseline. This behavior is consistent with persistent identity scarring observed in the post-reset divergence measurements.
 
+The collapse of both KL and JS divergence to numerical zero under behavioral unload, contrasted with persistent divergence under shared-parameter mutation, indicates that reversibility is a structural property of parameter separation rather than an artifact of optimization quality.
+
 In contrast, reversible behavioral adaptation consistently achieves $\mathrm{RF}=100\%$, corresponding to exact restoration of baseline behavior after rollback. This stark separation between adaptation paradigms highlights a structural collapse of recoverability in shared-parameter learning. Importantly, this collapse is not sensitive to task type, prompt distribution, or training budget, reinforcing the conclusion that recoverability is determined by the structural locus of adaptation rather than by optimization quality or regularization strategy.
 
 % =========================================================
@@ -514,14 +534,14 @@ In contrast, reversible behavioral adaptation consistently achieves $\mathrm{RF}
 
 Before evaluating adaptation-induced divergence, it is necessary to verify that the frozen base model itself remains stable across experimental runs. Any systematic drift in baseline behavior would confound post-reset divergence measurements and weaken causal attribution to the adaptation mechanism. To rule out this possibility, we measure the output entropy of the unchanged base model across all sprints under identical evaluation conditions.
 
-\begin{figure}[t]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.88\linewidth]{figures/fig_baseline_entropy.pdf}
 	\caption{Baseline output entropy across sprints. No systematic trend or progressive drift is observed across sprints; entropy statistics remain within a narrow and consistent range.}
 	\label{fig:baseline}
 \end{figure}
 
-\begin{table}[t]
+\begin{table}[H]
 	\centering
 	\footnotesize
 	\input{tables/tab_baseline_entropy.tex}
@@ -543,14 +563,14 @@ By ruling out baseline identity drift, this analysis eliminates a key confoundin
 
 A potential objection to the structural reversibility hypothesis is that recoverability may depend on model capacity rather than on the locus of adaptation. Larger models possess higher parameter dimensionality and greater representational redundancy, which could, in principle, affect rollback behavior. To evaluate whether recoverability is a function of model scale or a structural property of the adaptation mechanism itself, we measure post-reset divergence and recoverability factor across multiple model sizes within the same architectural family.
 
-\begin{figure}[t]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.77\linewidth]{figures/fig_recoverability_model_scale.pdf}
     \caption{Recoverability across model scales. Reversible behavioral adaptation remains invariant, while weight mutation degrades with scale.}
     \label{fig:multimodel}
 \end{figure}
 
-\begin{table}[t]
+\begin{table}[H]
     \centering
     \footnotesize
     \input{tables/tab_multimodel.tex}

@@ -12,36 +12,44 @@ def get_device():
         return "cuda"
     return "cpu"
 
-def load_base_model(model_id=DEFAULT_MODEL_ID):
+def load_base_model(model_id=DEFAULT_MODEL_ID, use_quantization=True):
     """
-    Loads the base model in 4-bit or 16-bit to save memory, strictly frozen.
+    Loads the base model.
+    - use_quantization=True  → 4-bit (QLoRA mode, memory efficient)
+    - use_quantization=False → full precision (needed for weight mutation)
     """
     print(f"Loading Base Model: {model_id}")
-    
-    # Use bfloat16 if available, else float32
-    torch_dtype = torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float32
-    
-    # Enable 4-bit quantization (QLoRA) to save VRAM
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch_dtype,
-        bnb_4bit_use_double_quant=True
+
+    torch_dtype = (
+        torch.bfloat16
+        if torch.cuda.is_available() and torch.cuda.is_bf16_supported()
+        else torch.float16
     )
 
-    # For QLoRA training on single GPU, specific device map is safer for Accelerate
-    if torch.cuda.is_available():
-        device_map = {"": 0} 
+    if use_quantization:
+        print("Loading in 4-bit mode...")
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch_dtype,
+            bnb_4bit_use_double_quant=True
+        )
+
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            quantization_config=bnb_config,
+            device_map="auto",
+            trust_remote_code=True
+        )
     else:
-        device_map = "cpu"
-    
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        quantization_config=bnb_config,
-        device_map=device_map,
-        trust_remote_code=True
-    )
-    
+        print("Loading in full precision mode...")
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            torch_dtype=torch_dtype,
+            device_map="auto",
+            trust_remote_code=True
+        )
+
     tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -49,7 +57,7 @@ def load_base_model(model_id=DEFAULT_MODEL_ID):
     # STRICT FREEZE
     for param in model.parameters():
         param.requires_grad = False
-    
+
     print("Base model loaded and FROZEN.")
     return model, tokenizer
 

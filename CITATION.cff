@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this repository in your work, please cite it!"
+authors:
+  - family-names: "Konduru"
+    given-names: "Pardhu Sree Rushi Varma"
+title: "REVA4-Research: Research Implementation and Code for Runtime Low-Rank Adaptive Environments and Structural Variance Analysis"
+version: "2026.0"
+date-released: "2026-02-22"
+url: "https://github.com/PardhuSreeRushiVarma20060119/REVA4-Research"
