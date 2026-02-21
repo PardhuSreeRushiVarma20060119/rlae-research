@@ -61,16 +61,14 @@ Run structural diagnostics:
     arts/
     colab-experiments/
     experiments/
-    reports/
-    WALKTHROUGH.md
+    Papers/
 
 ------------------------------------------------------------------------
 
 ## Contribution Policy
 
 This repository is a research artifact accompanying the published
-paper.\
-External contributions are not accepted.
+paper. External contributions are not accepted.
 
 ------------------------------------------------------------------------
 
