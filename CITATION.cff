@@ -1,9 +1,10 @@
 cff-version: 1.2.0
-message: "If you use this repository in your work, please cite it!"
-authors:
-  - family-names: "Konduru"
-    given-names: "Pardhu Sree Rushi Varma"
+message: "If you use this repository in your work, please cite it as below."
 title: "RLAE-Research: Research Implementations and Code, Experiments for Runtime Low-Rank Adaptive Environments"
 version: "2026.0"
 date-released: "2026-02-22"
 url: "https://github.com/PardhuSreeRushiVarma20060119/rlae-Research"
+
+authors:
+  - family-names: "Konduru"
+    given-names: "Pardhu Sri Rushi Varma"
