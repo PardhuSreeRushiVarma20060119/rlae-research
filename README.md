@@ -8,7 +8,7 @@ accompanying the paper:
 **On the Structural Limitations of Weight-Based Neural Adaptation and
 the Role of Reversible Behavioral Learning.**
 
-It is provided strictly for reproducibility.
+It is provided strictly for reproducibility. 
 
 ------------------------------------------------------------------------
 
