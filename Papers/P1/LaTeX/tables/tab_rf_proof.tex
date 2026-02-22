@@ -1,12 +1,13 @@
 \begin{table}[H]
 	\centering
 	\footnotesize
-	\begin{tabular}{ccc}
-		\toprule
-		Adaptation Method & Mean Post-reset KL & RF (\%) \\
-		\midrule
-		Weight-based ($\alpha = 0.05$) & 18.574 & 0 \\
-		Reversible ($\varepsilon \geq 0.6$) & $< 10^{-6}$ & 100 \\
-		\bottomrule
-	\end{tabular}
+\begin{tabular}{ccc}
+	\toprule
+	Adaptation Mechanism & Post-reset Divergence & RF \\
+	\midrule
+	Direct Weight Mutation & $> 0$ & $0$ \\
+	Structured Fine-Tuning & $> 0$ & $0$ \\
+	Reversible Behavioral Adaptation (RLAE) & $\approx 0$ & $1$ \\
+	\bottomrule
+\end{tabular}
 \end{table}

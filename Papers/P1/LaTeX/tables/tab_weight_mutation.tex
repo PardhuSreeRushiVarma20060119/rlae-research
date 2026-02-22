@@ -1,13 +1,19 @@
 \begin{table}[H]
 	\centering
 	\footnotesize
-	\begin{tabular}{ccc}
+	\begin{tabular}{cccccc}
 		\toprule
-		Mutation Intensity $\alpha$ & Mean Post-reset KL & Behavioral Status \\
+		\multirow{2}{*}{$\alpha$} &
+		\multicolumn{2}{c}{1.5B} &
+		\multicolumn{2}{c}{3B} &
+		\multirow{2}{*}{RF} \\
+		\cmidrule(lr){2-3}
+		\cmidrule(lr){4-5}
+		& KL & JS & KL & JS & \\
 		\midrule
-		0.001 & 0.339 & Scarred but coherent \\
-		0.010 & 10.430 & Severely degraded \\
-		0.050 & 18.574 & Corrupted \\
+		0.001 & 0.169 & 0.031 & 0.355 & 0.049 & 0 \\
+		0.01  & 6.347 & 0.574 & 8.780 & 0.655 & 0 \\
+		0.05  & 14.747 & 0.688 & 15.581 & 0.691 & 0 \\
 		\bottomrule
 	\end{tabular}
 \end{table}
