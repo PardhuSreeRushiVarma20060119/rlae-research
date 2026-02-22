@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import time
 import torch
 import copy
 import random
@@ -12,7 +13,7 @@ from peft import PeftModel, LoraConfig, get_peft_model
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.model import load_base_model, DEFAULT_MODEL_ID, clear_gpu_cache, print_gpu_memory, cuda_oom_protect
-from utils.metrics import log_results, calculate_kl_divergence, calculate_js_divergence, get_latest_sprint_path
+from utils.metrics import calculate_kl_divergence, calculate_js_divergence, get_latest_sprint_path, log_experiment_summary
 
 # -----------------------------------------------------------------------------
 # GLOBAL SEED LOCKING (M1 Repeatability)
@@ -210,18 +211,20 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID, is_control=False):
         base_model_sec1.eval()
 
         peak_kl_sec1 = 0.0
+        peak_js_sec1 = 0.0
 
         for idx, p in enumerate(prompts):
             inputs = tokenizer(p['text'], return_tensors="pt").to(device)
             with torch.no_grad():
                 test_logits = base_model_sec1(**inputs).logits
-                peak_kl_sec1 += calculate_kl_divergence(
-                    reference_logits[idx].to(device),
-                    test_logits
-                )
+                ref = reference_logits[idx].to(device)
+                peak_kl_sec1 += calculate_kl_divergence(ref, test_logits)
+                peak_js_sec1 += calculate_js_divergence(ref, test_logits)
 
         peak_kl_sec1 /= len(prompts)
+        peak_js_sec1 /= len(prompts)
         print(f"SEC1 Peak KL: {peak_kl_sec1:.4f}")
+        print(f"SEC1 Peak JS: {peak_js_sec1:.4f}")
 
         del base_model_sec1
         clear_gpu_cache()
@@ -248,18 +251,20 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID, is_control=False):
         base_model_sec2.eval()
 
         peak_kl_sec2 = 0.0
+        peak_js_sec2 = 0.0
 
         for idx, p in enumerate(prompts):
             inputs = tokenizer(p['text'], return_tensors="pt").to(device)
             with torch.no_grad():
                 test_logits = base_model_sec2(**inputs).logits
-                peak_kl_sec2 += calculate_kl_divergence(
-                    reference_logits[idx].to(device),
-                    test_logits
-                )
+                ref = reference_logits[idx].to(device)
+                peak_kl_sec2 += calculate_kl_divergence(ref, test_logits)
+                peak_js_sec2 += calculate_js_divergence(ref, test_logits)
 
         peak_kl_sec2 /= len(prompts)
+        peak_js_sec2 /= len(prompts)
         print(f"SEC2 Peak KL: {peak_kl_sec2:.4f}")
+        print(f"SEC2 Peak JS: {peak_js_sec2:.4f}")
 
         del base_model_sec2
         clear_gpu_cache()
@@ -338,6 +343,42 @@ def run_comparison_demo(model_id=DEFAULT_MODEL_ID, is_control=False):
     del base_model_sec3
     clear_gpu_cache()
     force_cuda_cleanup()
+
+# -----------------------------------------------------------------------------
+
+# ============================================================
+# LOG EXPERIMENT RESULTS TO JSON
+# ============================================================
+
+    results_payload = {
+        "model_id": model_id,
+        "scale": get_model_scale(model_id),
+        "timestamp": time.time(),
+        "sections": {}
+    }
+
+    if not is_large_model and not is_control:
+        results_payload["sections"]["sec1"] = {
+            "peak_kl": peak_kl_sec1,
+            "peak_js": peak_js_sec1
+        }
+        results_payload["sections"]["sec2"] = {
+            "peak_kl": peak_kl_sec2,
+            "peak_js": peak_js_sec2
+        }
+
+    results_payload["sections"]["sec3"] = {
+        "peak_kl": peak_kl_sec3,
+        "peak_js": peak_js_sec3
+    }
+
+    results_payload["sections"]["post_reset"] = {
+        "kl": post_kl_sec3,
+        "js": post_js_sec3
+    }
+
+    log_experiment_summary(RESULTS_FILE, results_payload)
+    print(f"\nResults saved to: {RESULTS_FILE}")
 
 # -----------------------------------------------------------------------------
 

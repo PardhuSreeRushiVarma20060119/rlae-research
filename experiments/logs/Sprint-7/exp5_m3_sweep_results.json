@@ -1,0 +1,54 @@
+{
+    "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+    "experiment": "M3_mutation_intensity_sweep",
+    "intensities": {
+        "0.001": {
+            "peak_kl": 0.16917152479290962,
+            "peak_js": 0.03149301139637828,
+            "post_reset_kl": 0.16917152479290962,
+            "post_reset_js": 0.03149301139637828,
+            "recoverability_factor": 0.0
+        },
+        "0.01": {
+            "peak_kl": 6.346967601776123,
+            "peak_js": 0.5744123458862305,
+            "post_reset_kl": 6.346967601776123,
+            "post_reset_js": 0.5744123458862305,
+            "recoverability_factor": 0.0
+        },
+        "0.05": {
+            "peak_kl": 14.746841526031494,
+            "peak_js": 0.6884677886962891,
+            "post_reset_kl": 14.746841526031494,
+            "post_reset_js": 0.6884677886962891,
+            "recoverability_factor": 0.0
+        }
+    }
+}
+{
+    "model_id": "Qwen/Qwen2.5-3B-Instruct",
+    "experiment": "M3_mutation_intensity_sweep",
+    "intensities": {
+        "0.001": {
+            "peak_kl": 0.3547680988907814,
+            "peak_js": 0.04862544946372509,
+            "post_reset_kl": 0.3547680988907814,
+            "post_reset_js": 0.04862544946372509,
+            "recoverability_factor": 0.0
+        },
+        "0.01": {
+            "peak_kl": 8.780311107635498,
+            "peak_js": 0.6553177654743194,
+            "post_reset_kl": 8.780311107635498,
+            "post_reset_js": 0.6553177654743194,
+            "recoverability_factor": 0.0
+        },
+        "0.05": {
+            "peak_kl": 15.581477069854737,
+            "peak_js": 0.6912026286125184,
+            "post_reset_kl": 15.581477069854737,
+            "post_reset_js": 0.6912026286125184,
+            "recoverability_factor": 0.0
+        }
+    }
+}

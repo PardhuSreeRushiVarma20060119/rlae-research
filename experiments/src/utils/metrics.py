@@ -173,6 +173,16 @@ def log_results(filepath, run_id, prompt_id, output_text, embedding, entropy_sco
     with open(filepath, 'a', encoding='utf-8') as f:
         f.write(json.dumps(record) + "\n")
 
+def log_experiment_summary(filepath, payload):
+    """
+    Logs experiment-level summary metrics (SEC1/SEC2/SEC3 etc.)
+    as a JSON object (one per line).
+    """
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+    with open(filepath, "a", encoding="utf-8") as f:
+        f.write(json.dumps(payload) + "\n")
+
 def load_results(filepath):
     records = []
     if not os.path.exists(filepath):
