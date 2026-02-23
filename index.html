@@ -23,11 +23,7 @@
             --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Outfit', sans-serif;
@@ -36,15 +32,11 @@
             line-height: 1.6;
             overflow-x: hidden;
             background-image:
-                radial-gradient(circle at 20% 20%, rgba(62, 136, 255, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(255, 62, 62, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 20% 20%, rgba(62,136,255,0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255,62,62,0.05) 0%, transparent 40%);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
 
         header {
             padding: 4rem 0;
@@ -56,7 +48,7 @@
         .logo-tag {
             display: inline-block;
             padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
             border-radius: 50px;
             font-size: 0.8rem;
@@ -90,24 +82,17 @@
             overflow: hidden;
             border: 1px solid var(--glass-border);
             margin-bottom: 6rem;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             opacity: 0;
             animation: fadeInUp 1s 0.2s forwards;
         }
 
-        .hero-image {
-            width: 100%;
-            display: block;
-            transition: var(--transition);
-        }
-
-        .hero-image:hover {
-            transform: scale(1.02);
-        }
+        .hero-image { width: 100%; display: block; transition: var(--transition); }
+        .hero-image:hover { transform: scale(1.02); }
 
         .framework-sections {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
             gap: 2rem;
             margin-bottom: 6rem;
         }
@@ -123,12 +108,10 @@
 
         .glass-card:hover {
             transform: translateY(-10px);
-            border-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255,255,255,0.2);
         }
 
-        .feature-list {
-            list-style: none;
-        }
+        .feature-list { list-style: none; }
 
         .feature-list li {
             padding-left: 1.5rem;
@@ -143,14 +126,41 @@
             color: var(--accent-blue);
         }
 
-        .papers-section {
-            margin-bottom: 8rem;
+        /* ===== Toggle ===== */
+
+        .paper-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
         }
 
-        .papers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
+        .toggle-btn {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            padding: 0.65rem 1.4rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-btn.active {
+            border-color: var(--accent-green);
+            background: rgba(62,255,142,0.15);
+            color: var(--accent-green);
+        }
+
+        /* ===== Tab Control ===== */
+
+        .paper-tab { display: none; }
+
+        .paper-tab.active {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
         }
 
         .paper-card {
@@ -163,6 +173,8 @@
             text-decoration: none;
             color: inherit;
             transition: var(--transition);
+            max-width: 850px;
+            width: 100%;
         }
 
         .paper-card:hover {
@@ -170,80 +182,30 @@
             transform: scale(1.02);
         }
 
-        .card-accent-blue h2 {
-    color: var(--accent-blue);
-}
+        .paper-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(62,255,142,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-green);
+        }
 
-.card-accent-red h2 {
-    color: var(--accent-red);
-}
+        .download-btn {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent-green);
+            margin-top: 1rem;
+        }
 
-.card-accent-red .feature-list li::before {
-    color: var(--accent-red);
-}
-
-.paper-icon {
-    flex-shrink: 0;
-    width: 60px;
-    height: 60px;
-    background: rgba(62, 255, 142, 0.1);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent-green);
-}
-
-.download-btn {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--accent-green);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-/* ===== Paper Toggle ===== */
-
-.paper-toggle {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
-    flex-wrap: wrap;
-}
-
-.toggle-btn {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--glass-border);
-    color: var(--text-dim);
-    padding: 0.65rem 1.4rem;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: var(--transition);
-    backdrop-filter: blur(6px);
-}
-
-.toggle-btn:hover {
-    border-color: var(--accent-green);
-    color: var(--accent-green);
-    background: rgba(62, 255, 142, 0.08);
-}
-
-.toggle-btn.active {
-    border-color: var(--accent-green);
-    background: rgba(62, 255, 142, 0.15);
-    color: var(--accent-green);
-    box-shadow: 0 0 15px rgba(62, 255, 142, 0.25);
-}
-
-/* Optional: small press animation */
-.toggle-btn:active {
-    transform: scale(0.96);
-}
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-weight: 500;
+            padding: 3rem 0;
+        }
 
         footer {
             padding: 4rem 0;
@@ -253,125 +215,97 @@
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity:0; transform: translateY(30px); }
+            to { opacity:1; transform: translateY(0); }
         }
 
     </style>
 </head>
 
 <body>
+<div class="container">
 
-    <div class="container">
+<header>
+    <div class="logo-tag">Research Laboratory</div>
+    <h1>REVA4 Research</h1>
+    <p class="tagline">Proving intelligence through bounded invariance and structural perturbation.</p>
+</header>
 
-        <header>
-            <div class="logo-tag">Research Laboratory</div>
-            <h1>REVA4 Research</h1>
-            <p class="tagline">
-                Proving intelligence through bounded invariance and structural perturbation.
-            </p>
-        </header>
+<div class="hero-image-container">
+    <img src="./arts/World of REVA4RE.png" class="hero-image">
+</div>
 
-        <div class="hero-image-container">
-            <img src="./arts/World of REVA4RE.png" alt="World of REVA4RE" class="hero-image">
-        </div>
-
-        <section class="framework-sections">
-            <div class="glass-card">
-                <h2>RLAE</h2>
-                <p>Runtime Low-Rank Adaptive Environments.</p>
-                <ul class="feature-list">
-                    <li>Frozen Core Invariance</li>
-                    <li>Behavioral Externalization</li>
-                    <li>Killability & Reversibility</li>
-                    <li>No Persistent Identity</li>
-                </ul>
-            </div>
-
-            <div class="glass-card">
-                <h2>SVAR</h2>
-                <p>Structural Variance Analysis for Robustness.</p>
-                <ul class="feature-list">
-                    <li>Identity Leakage Score (ILS)</li>
-                    <li>Stability Envelopes</li>
-                    <li>Reset Integrity Verification</li>
-                    <li>Structural Drift Tracking</li>
-                </ul>
-            </div>
-        </section>
-    <section class="papers-section">
-    <div class="section-header">
-        <h2>Research Papers</h2>
-        <p>Latest technical reports and publications.</p>
+<section class="framework-sections">
+    <div class="glass-card">
+        <h2>RLAE</h2>
+        <ul class="feature-list">
+            <li>Frozen Core Invariance</li>
+            <li>Behavioral Externalization</li>
+            <li>Killability & Reversibility</li>
+            <li>No Persistent Identity</li>
+        </ul>
     </div>
 
-    <!-- Toggle Buttons -->
-    <div class="paper-toggle">
-        <button class="toggle-btn active" onclick="showTab('preprints')">Preprints</button>
-        <button class="toggle-btn" onclick="showTab('journals')">Journals</button>
-        <button class="toggle-btn" onclick="showTab('conferences')">Conferences</button>
-    </div>
-
-    <!-- Preprints -->
-    <div id="preprints" class="paper-tab active">
-        <a href="papers/RLAE-Preprint.pdf" class="paper-card">
-            <div class="paper-content">
-                <div class="paper-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                </div>
-                <div>
-                    <h3>Preprint Version (arXiv Format)</h3>
-                        <p>Structural Limitations of Weight-Based Neural Adaptation & The Role of Reversible Behavioural Learning</p>
-                        <p>PrePrint-formatted manuscript prepared for arXiv PrePrint Server</p>
-                    </div>
-                <div class="download-btn">View Research Paper →</div>
-            </div>
-        </a>
-    </div>
-
-    <!-- Journals -->
-    <div id="journals" class="paper-tab">
-        <a href="papers/RLAE-TMLR-Submission.pdf" class="paper-card">
-            <div class="paper-content">
-                <div class="paper-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                </div>
-                <div>
-                    <h3>TMLR Submission Version</h3>
-                        <p>Structural Limitations of Weight-Based Neural Adaptation & The Role of Reversible Behavioural Learning</p>
-                        <p>Journal-formatted manuscript prepared for Transactions on Machine Learning Research</p>
-                </div>
-                <div class="download-btn">View Research Paper →</div>
-            </div>
-        </a>
-    </div>
-
-    <!-- Conferences -->
-    <div id="conferences" class="paper-tab">
-        <div class="empty-state">
-            None yet.
-        </div>
+    <div class="glass-card">
+        <h2>SVAR</h2>
+        <ul class="feature-list">
+            <li>Identity Leakage Score (ILS)</li>
+            <li>Stability Envelopes</li>
+            <li>Reset Integrity Verification</li>
+            <li>Structural Drift Tracking</li>
+        </ul>
     </div>
 </section>
-        <footer>
-            <p>© 2026 REVA4 Research Team. Licensed under AGPL-3.0.</p>
-        </footer>
 
+<section class="papers-section">
+    <h2>Research Papers</h2>
+
+    <div class="paper-toggle">
+        <button class="toggle-btn active" onclick="showTab('preprints', this)">Preprints</button>
+        <button class="toggle-btn" onclick="showTab('journals', this)">Journals</button>
+        <button class="toggle-btn" onclick="showTab('conferences', this)">Conferences</button>
     </div>
+
+    <div id="preprints" class="paper-tab active">
+        <a href="papers/RLAE-Preprint.pdf" class="paper-card">
+            <div>
+                <h3>Preprint Version (arXiv Format)</h3>
+                <p>Structural Limitations of Weight-Based Neural Adaptation.</p>
+                <div class="download-btn">View Research Paper →</div>
+            </div>
+        </a>
+    </div>
+
+    <div id="journals" class="paper-tab">
+        <a href="papers/RLAE-TMLR-Submission.pdf" class="paper-card">
+            <div>
+                <h3>TMLR Submission Version</h3>
+                <p>Journal-formatted manuscript prepared for TMLR.</p>
+                <div class="download-btn">View Research Paper →</div>
+            </div>
+        </a>
+    </div>
+
+    <div id="conferences" class="paper-tab">
+        <div class="empty-state">None yet.</div>
+    </div>
+
+</section>
+
+<footer>
+    © 2026 REVA4 Research Team. Licensed under AGPL-3.0.
+</footer>
+
+</div>
+
+<script>
+function showTab(tabId, btn) {
+    document.querySelectorAll('.paper-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+}
+</script>
 
 </body>
 </html>
