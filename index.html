@@ -204,6 +204,46 @@
     align-items: center;
     gap: 0.5rem;
 }
+/* ===== Paper Toggle ===== */
+
+.paper-toggle {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.toggle-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    color: var(--text-dim);
+    padding: 0.65rem 1.4rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: var(--transition);
+    backdrop-filter: blur(6px);
+}
+
+.toggle-btn:hover {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    background: rgba(62, 255, 142, 0.08);
+}
+
+.toggle-btn.active {
+    border-color: var(--accent-green);
+    background: rgba(62, 255, 142, 0.15);
+    color: var(--accent-green);
+    box-shadow: 0 0 15px rgba(62, 255, 142, 0.25);
+}
+
+/* Optional: small press animation */
+.toggle-btn:active {
+    transform: scale(0.96);
+}
 
         footer {
             padding: 4rem 0;
@@ -259,14 +299,24 @@
                 </ul>
             </div>
         </section>
+    <section class="papers-section">
+    <div class="section-header">
+        <h2>Research Papers</h2>
+        <p>Latest technical reports and publications.</p>
+    </div>
 
-        <section class="papers-section">
-            <h2>Research Papers</h2>
+    <!-- Toggle Buttons -->
+    <div class="paper-toggle">
+        <button class="toggle-btn active" onclick="showTab('preprints')">Preprints</button>
+        <button class="toggle-btn" onclick="showTab('journals')">Journals</button>
+        <button class="toggle-btn" onclick="showTab('conferences')">Conferences</button>
+    </div>
 
-            <div class="papers-grid">
-
-                <a href="papers/RLAE-Preprint.pdf" class="paper-card">
-                    <div class="paper-icon">
+    <!-- Preprints -->
+    <div id="preprints" class="paper-tab active">
+        <a href="papers/RLAE-Preprint.pdf" class="paper-card">
+            <div class="paper-content">
+                <div class="paper-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -275,19 +325,22 @@
                             <line x1="16" y1="17" x2="8" y2="17"></line>
                             <polyline points="10 9 9 9 8 9"></polyline>
                         </svg>
-                    </div>
-                    <div>
-                        <h3>Preprint Version (arXiv Format)</h3>
+                </div>
+                <div>
+                    <h3>Preprint Version (arXiv Format)</h3>
                         <p>Structural Limitations of Weight-Based Neural Adaptation & The Role of Reversible Behavioural Learning</p>
                         <p>PrePrint-formatted manuscript prepared for arXiv PrePrint Server</p>
                     </div>
-                    <div class="download-btn">
-                            View Research Paper →
-                    </div>
-                </a>
+                <div class="download-btn">View Research Paper →</div>
+            </div>
+        </a>
+    </div>
 
-                <a href="papers/RLAE-TMLR-Submission.pdf" class="paper-card">
-                    <div class="paper-icon">
+    <!-- Journals -->
+    <div id="journals" class="paper-tab">
+        <a href="papers/RLAE-TMLR-Submission.pdf" class="paper-card">
+            <div class="paper-content">
+                <div class="paper-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -296,20 +349,24 @@
                             <line x1="16" y1="17" x2="8" y2="17"></line>
                             <polyline points="10 9 9 9 8 9"></polyline>
                         </svg>
-                    </div>
-                    <div>
-                        <h3>TMLR Submission Version</h3>
+                </div>
+                <div>
+                    <h3>TMLR Submission Version</h3>
                         <p>Structural Limitations of Weight-Based Neural Adaptation & The Role of Reversible Behavioural Learning</p>
-                        <p>Journal-formatted manuscript prepared for Transactional Machine Learning Research.</p>
-                    </div>
-                    <div class="download-btn">
-                            View Research Paper →
-                    </div>
-                </a>
-
+                        <p>Journal-formatted manuscript prepared for Transactions on Machine Learning Research</p>
+                </div>
+                <div class="download-btn">View Research Paper →</div>
             </div>
-        </section>
+        </a>
+    </div>
 
+    <!-- Conferences -->
+    <div id="conferences" class="paper-tab">
+        <div class="empty-state">
+            None yet.
+        </div>
+    </div>
+</section>
         <footer>
             <p>© 2026 REVA4 Research Team. Licensed under AGPL-3.0.</p>
         </footer>
