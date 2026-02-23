@@ -8,6 +8,8 @@ accompanying the paper:
 **On the Structural Limitations of Weight-Based Neural Adaptation and
 the Role of Reversible Behavioral Learning.**
 
+**Zenodo DOI:** [10.5281/zenodo.18738128](https://doi.org/10.5281/zenodo.18738129)
+
 It is provided strictly for reproducibility. 
 
 ------------------------------------------------------------------------
