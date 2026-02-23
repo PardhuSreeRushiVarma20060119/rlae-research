@@ -1,0 +1,69 @@
+name: Build and Deploy REVA4 Papers
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Papers/**"
+      - "index.html"
+      - "arts/**"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -------- Compile arXiv Preprint --------
+      - name: Compile arXiv Version
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: Papers/PrePrint-arXiv-Zenodo/arXiv-LaTeX
+          root_file: PaperOne.tex
+
+      # -------- Compile TMLR Version --------
+      - name: Compile TMLR Version
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: Papers/Journal/TMLR
+          root_file: main.tex
+
+      # -------- Prepare GitHub Pages Content --------
+      - name: Prepare Pages content
+        run: |
+          rm -rf public
+          mkdir -p public/papers
+
+          # Copy site
+          cp index.html public/index.html
+          cp -r arts public/arts
+
+          # Copy PDFs (renamed cleanly for public)
+          cp Papers/PrePrint-arXiv-Zenodo/arXiv-LaTeX/PaperOne.pdf public/papers/RLAE-Preprint.pdf
+          cp Papers/Journal/TMLR/main.pdf public/papers/RLAE-TMLR-Submission.pdf
+
+      # -------- Upload Pages artifact --------
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
