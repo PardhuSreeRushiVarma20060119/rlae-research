@@ -117,7 +117,7 @@ Modern neural models are commonly adapted through direct modification of model p
 	\subsection{Model Decomposition}
 	\label{sec:model_decomposition}
 	
-	We consider a neural model $f$ whose behavior is determined by a set of parameters. To reason about adaptation and reversibility, we decompose these parameters into two disjoint components: a core parameter set and a behavioral parameter set.
+	We consider a neural model $f$ parameterized by a vector of weights, following the standard formulation of neural networks as functions $f(x;\theta)$ \cite{Goodfellow-et-al-2016}. To reason about adaptation and reversibility, we decompose these parameters into two disjoint components: a core parameter set and a behavioral parameter set.
 	
 	The core parameters, denoted by $\theta$, encode the model’s foundational representations and define its identity. These parameters capture the pretrained capabilities of the model and are assumed to remain fixed during reversible adaptation. In contrast, the behavioral parameters, denoted by $\phi$, encode task- or objective-specific adaptations that modify the model’s observable behavior without altering its core identity.
 	
