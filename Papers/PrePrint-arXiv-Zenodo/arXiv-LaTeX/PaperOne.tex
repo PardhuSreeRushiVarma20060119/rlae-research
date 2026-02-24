@@ -128,7 +128,7 @@
 	
 	Parameter-efficient adaptation strategies are developed to reduce the expense of adapting large pretrained models. These adaptation strategies, such as adapters, low-rank adaptation (LoRA), and other PEFT-based solutions, introduce a small number of trainable parameters with the goal of preserving the majority of the base model \cite{houlsby2019adapter,hu2021lora}.
 	
-	The key to the development of these adaptation strategies is efficiency and scalability. They enable models to adapt rapidly without the need for full-scale retraining or maintaining multiple copies of the model. Although the PEFT-based solutions introduce a natural level of modularity, they are not necessarily developed with reversibility, rollback of behavior, or long-term governance in mind. Therefore, the extent to which these solutions facilitate controlled recovery of past behaviors has not been adequately investigated.
+	The key to the development of these adaptation strategies is efficiency and scalability. They enable models to adapt rapidly without the need for full-scale retraining or maintaining multiple copies of the model. Although the PEFT-based solutions introduce a natural level of modularity, they are not necessarily developed with reversibility, rollback of behavior, or long-term governance in mind. Therefore, the extent to which these solutions facilitate controlled recovery of past behaviors has not been clearly investigated.
 	
 	\subsection{Limitations of Existing Approaches}
 	\label{sec:limitations}
@@ -238,9 +238,9 @@
 	\subsection{Divergence Metrics and Recoverability Factor}
 	\label{sec:kl_rf}
 	
-	\paragraph{Kullback--Leibler Divergence:}
+	To quantify the effects of adaptation and rollback, we require a metric that captures behavioral deviation between model states. We measure behavioral change by comparing the output distributions induced by different parameter configurations under a fixed input distribution.We adopt the standard definitions of Kullback–Leibler (KL) divergence and Jensen–Shannon (JS) divergence from information theory \cite{kullback1951information, lin1991divergence, cover2006elements}.
 	
-	To quantify the effects of adaptation and rollback, we require a metric that captures behavioral deviation between model states. We measure behavioral change by comparing the output distributions induced by different parameter configurations under a fixed input distribution.
+	\paragraph{Kullback--Leibler Divergence:}
 	
 	Let $f_0$ denote a reference model and $f_1$ an adapted or recovered model. For an input $x$, let $p_0(y \mid x)$ and $p_1(y \mid x)$ denote the corresponding output distributions. We define behavioral divergence using the Kullback--Leibler (KL) divergence:
 	\[
