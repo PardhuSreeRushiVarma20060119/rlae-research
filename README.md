@@ -9,6 +9,11 @@ accompanying the paper:
 the Role of Reversible Behavioral Learning.**
 
 - **Zenodo DOI:** [10.5281/zenodo.18761938](https://doi.org/10.5281/zenodo.18761938)
+  
+> [!NOTE]
+> Cite all versions? You can cite all versions by using the DOI : [10.5281/zenodo.18738128](https://doi.org/10.5281/zenodo.18738128).  
+> This DOI represents all versions and will always resolve to the latest one.
+
 - **arXiv Link:** Coming Soon!
 - **TMLR Journal Publication:** Coming Soon! 
 
