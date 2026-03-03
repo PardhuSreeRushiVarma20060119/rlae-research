@@ -34,12 +34,12 @@
 \maketitle
 
 \begin{abstract}
-	The neural models are usually updated or modified by adjusting the parameters of the model, such as fine-tuning and alignment based on reinforcement learning, although these methods are helpful in the traditional short-term optimization, it may lead to irreversible modifications to the basic behaviors of the neural \& machine learning models, such as making them poor at reasoning or losing their basic capabilities and identity. In our work, we investigate the idea of \emph{structural irreversibility} as a restriction on modifying the shared parameters of a model. We have done some experiments, and we found that the direct modification of the parameters of the model may confuse the objectives of a specific task with the general parameters of the model, so that the model behaves in a different manner in a way that cannot be reversed by any method that can be realistically applied. On the other hand, we investigated a method to modify the model in a reversible manner where the things learned by the model are separated from the general model and do not impact or modify it. We found that this helps the model to learn to adapt to a task but still be able to switch back to its original state with little to no difference in behavior. Finally, we were able to propose a way to measure the capability of a model to reverse changes. we formalize this distinction by proposing \emph{recoverability} as a clear evaluation metric for adaptive systems. we propose a way to measure the robustness of a model when it is changed in a controlled fashion. The idea of being able to reverse changes in a model is not as clear-cut in existing traditional machine learning \& deep learning approaches. It is very important in the development of neural systems that are safe and can be controlled and will last for a very long time. Neural models and large language models are what we are dealing with in this scenario and the idea of being able to reverse changes is part of developing them to function well and safely and effectively. and Large language models need to be able to adapt to new tasks without losing their original capabilities, and neural models need to be able to change in a safe and controlle manner.
+	Neural models usually adapted and involve changes in parameters shared among the model components through fine-tuning, alignment-based training, and reinforcement learning. These changes have been found effective in short-term optimization. However, they result in long-term changes in the model’s basic behavior. In our study, we introduce the concept of structural irreversibility as a characteristic of shared-parameter model adaptation. This concept refers to the intertwining of task-specific objectives and representations of the model identity. We show that when parameters are directly mutated, the resulting model behaves divergently from the original model. This divergence cannot be reversed deterministically without an explicit snapshot of the parameters. We introduce reversible behavioral learning, in which model behaviors are structurally disassociated from identity parameters and can be deterministically unloaded through an explicit unload process. We also introduce the Recoverability Factor as a normalized measure of behavioral recoverability. We provide additional diagnostics based on model divergence. Experiments show that reversible model adaptation achieves rollback within numerical precision, whereas shared-parameter mutation displays persistent post-reset divergence.
 \end{abstract}
 
 \section{Introduction}
 	\label{sec:intro}
-	This paper examines the structural properties of neural adaptation mechanisms under sequential learning. We focus on the relationship between parameter modification, behavioral stability, and recoverability, and outline our empirical findings and contributions below.
+	For large neural models, adaptation typically involves direct updates to shared parameters. But this gives rise to a structural question: under what circumstances can behavioral change following adaptation be deterministically reversed without access to a dedicated parameter checkpoint? This paper examines the structural properties of neural adaptation mechanisms under sequential learning. We focus on the relationship between parameter modification, behavioral stability, and recoverability, and outline our empirical findings and contributions below.
 	
 	\noindent\textbf{Code Availability:} 
 	The implementation and experiments supporting this work are publicly available. \cite{varma2026rlae}.
@@ -172,18 +172,18 @@
 	\label{sec:irreversibility}
 	
 	We define \emph{structural irreversibility} as a property of adaptation mechanisms that operate on shared model parameters. An adaptation process is structurally irreversible if, after applying the adaptation, there exists no general procedure that can restore the model to its original behavior without access to an explicit parameter checkpoint or retraining.
-	
+
 	Under the operator formulation introduced in Section~\ref{sec:adaptation_operators}, weight-based adaptation $\mathcal{A}_w$ modifies the core parameter set $\theta$. Because $\theta$ simultaneously encodes multiple behaviors and abstractions, updates induced by new objectives become entangled with representations supporting prior behaviors. As a consequence, the mapping induced by $\mathcal{A}_w$ is not, in general, invertible with respect to behavioral equivalence.
-	
+
 	Formally, let $f_0$ denote a model with parameters $(\theta,\phi)$ and let $f_1 = \mathcal{A}_w(f_0)$ be the adapted model with core parameters $\theta' \neq \theta$. Structural irreversibility arises when no operator $\mathcal{R}$ exists such that:
 	\[
 	\mathcal{R}(f_1) \equiv f_0
 	\]
 	under behavioral equivalence, unless $\mathcal{R}$ has access to the original parameter state $\theta$. In practice, this implies that rollback requires full checkpoint restoration or retraining, rather than a principled undo operation.
-	
+
 	Crucially, this irreversibility is not attributed to suboptimal optimization, insufficient regularization, or poor hyperparameter choices. Instead, it follows directly from the use of a shared representational substrate for multiple objectives. Once task-specific updates are absorbed into the core parameter space, their effects cannot be cleanly disentangled from pre-existing behaviors.
-	
-	Structural irreversibility therefore characterizes a fundamental limitation of weight-based adaptation paradigms: behavioral changes introduced through shared-parameter updates are persistent by construction, and recovery of prior behavior cannot be guaranteed without explicit preservation of the original model state.
+
+	Structural irreversibility therefore characterizes a structural limitation of shared-parameter adaptation under the assumptions defined in Section~\ref{sec:scope}.
 	
 	
 	\subsection{Reversible Behavioral Learning (RLAE)}
@@ -346,34 +346,27 @@
 	\paragraph{Lemma (Irreversibility of Weight Mutation without Snapshot):}
 	
 	Let $f_\theta$ denote a model parameterized by $\theta$.
-	Suppose adaptation modifies $\theta$ directly to obtain $\theta'$, 
-	and no exact parameter snapshot of $\theta$ is preserved.
-	
-	Then any rollback procedure $\mathcal{R}$ that attempts to recover $f_\theta$
-	from $f_{\theta'}$ without access to the original $\theta$
-	must solve an optimization problem in parameter space.
-	In general,
-	
-	\[
-	D_{\mathrm{KL}}(f_\theta \,\|\, \mathcal{R}(f_{\theta'})) > 0.
-	\]
-	
-	\textit{Proof sketch:}
-	Direct weight mutation entangles adaptation within the global parameter manifold.
-	Without an exact snapshot, recovering $\theta$ from $\theta'$ requires
-	approximate inversion in high-dimensional space. 
-	Because neural network parameterizations are non-linear and many-to-one
-	with respect to behavioral mappings, the inverse mapping is not uniquely
-	recoverable from outputs alone.
-	Thus, exact restoration of $p_\theta(y \mid x)$ is not guaranteed,
-	implying strictly positive divergence under finite-precision evaluation.
-	\hfill $\square$
-	
-	In weight-based adaptation, rollback typically relies on approximate procedures or retraining, leading to non-zero post-reset divergence and $\mathrm{RF} < 1$. In contrast, reversible behavioral adaptation admits deterministic rollback through the unload operator, yielding near-zero divergence and $\mathrm{RF} \approx 1$ in practice.
-	
-	Throughout our experiments, we report both KL and JS divergence alongside RF to distinguish between irreversible behavioral drift and structurally reversible adaptation. This enables recoverability to be treated as a first-class evaluation criterion, complementary to conventional performance metrics.
-	
-	It is important to note that divergence is evaluated with respect to a fixed prompt distribution and finite-precision numerical representation. Thus, exact recovery in this work refers to distributional equivalence under the evaluation protocol rather than strict parameter-level equality. Zero divergence indicates that no observable behavioral deviation remains within measurement resolution.
+Suppose adaptation modifies $\theta$ directly to obtain $\theta'$, 
+and no exact parameter snapshot of $\theta$ is preserved.
+
+Then any rollback procedure $\mathcal{R}$ that attempts to recover $f_\theta$
+from $f_{\theta'}$ without access to the original $\theta$
+must solve an optimization problem in parameter space. Under non-degenerate parameterizations and in the absence of access to the original parameter state $\theta$, any rollback operator $R$ must solve a non-convex inverse problem in parameter space. Except in degenerate parameter equivalence cases where the adapted parameter state remains functionally identical to the original model under the evaluation distribution, deterministic restoration of behavioral equivalence is not guaranteed.
+\[
+D_{\mathrm{KL}}\!\left(f_\theta \,\middle\|\, \mathcal{R}(f_{\theta'})\right)
+\ge \epsilon,
+\]
+for some $\epsilon > 0$ under finite-precision evaluation and except in degenerate equivalence cases.
+
+\textit{Proof sketch:}
+Direct weight mutation entangles adaptation within the global parameter manifold. Without access to an exact snapshot of $\theta$, recovering $\theta$ from $\theta'$ requires solving a non-convex inverse problem in high-dimensional parameter space. Because neural network parameterizations are non-linear and many-to-one with respect to behavioral mappings, distinct parameter states may induce similar but not identical output distributions.
+\hfill $\square$
+
+In weight-based adaptation, rollback typically relies on approximate procedures or retraining, leading to non-zero post-reset divergence and $\mathrm{RF} < 1$. In contrast, reversible behavioral adaptation admits deterministic rollback through the unload operator, yielding near-zero divergence and $\mathrm{RF} \approx 1$ in practice.
+
+Throughout our experiments, we report both KL and JS divergence alongside RF to distinguish between irreversible behavioral drift and structurally reversible adaptation. This enables recoverability to be treated as a first-class evaluation criterion, complementary to conventional performance metrics.
+
+It is important to note that divergence is evaluated with respect to a fixed prompt distribution and finite-precision numerical representation. Thus, exact recovery in this work refers to distributional equivalence under the evaluation protocol rather than strict parameter-level equality. Zero divergence indicates that no observable behavioral deviation remains within measurement resolution.
 	
 	\subsection{Identity Leakage Score (ILS)}
 	\label{sec:ils}
@@ -458,11 +451,11 @@
 	\subsection{Models}
 	\label{sec:models}
 	
-	We conduct experiments using pretrained neural models drawn from a single architecture family, with each model treated as a fixed core identity throughout evaluation with core parameters $\theta$. The specific architecture and scale of the model are not central to our claims; instead, we require only that the model supports both direct weight updates and parameter-isolated behavioral adaptation.
-	
-	To ensure a fair comparison, the same base model initialization is used across all adaptation scenarios. For reversible behavioral adaptation, the core parameters $\theta$ are frozen, and all learning is confined to a separate behavioral parameter set $\phi$. For weight-based adaptation, updates are applied directly to $\theta$.
-	
-	Unless otherwise specified, no architectural changes are introduced beyond those required to support parameter isolation in the behavioral adaptation setting.
+We use experiments that involve pretrained models of a single architecture family, with models considered to be a fixed core identity throughout evaluation using the core parameters $\theta$. While the architecture and size of the model are not relevant to the claims we are making, we need a model that supports direct weight updates and isolated behavioral adaptation parameters.
+
+In order to have a fair comparison, the same base model initialization is used for all adaptation scenarios. For reversible behavioral adaptation, the model's core parameters $\theta$ are frozen, and all learning is restricted to a separate behavioral parameters set $\phi$. For weight-based adaptation, the parameters are updated directly.
+
+The experiments were carried out using a pretrained decoder-only model, which is a member of the Qwen2.5 family \cite{qwen2024qwen2}. Two model sizes were used for the experiments: Qwen2.5-1.5B and Qwen2.5-3B. These models have the same architecture, training objectives, and design, but they have different numbers of parameters, model depths, and sizes. Unless otherwise specified, no architectural changes are introduced to the model, aside from the ones that are necessary to support isolated parameters in behavioral adaptation.
 	
 	
 	\subsection{Adaptation Scenarios}
@@ -509,10 +502,12 @@
 		To assess robustness of adaptive behavior, we compute Structural Variance as defined in Section~\ref{sec:svar} by applying bounded perturbations to the adaptive parameter set and measuring the resulting behavioral divergence. For reversible behavioral adaptation, perturbations are applied to the behavioral parameters $\phi$ with core parameters $\theta$ held fixed. For weight-based adaptation, analogous perturbations are applied to the adapted parameter state to probe sensitivity to small structural changes.
 	\end{enumerate}
 	
+	\newpage
+	
 	\subsection{Implementation Details}
 	\label{sec:implementation_details}
 	
-	All experiments are conducted using fixed random seeds to ensure reproducibility. Optimization hyper-parameters, training durations, and evaluation settings are held constant across adaptation paradigms wherever applicable.
+	All experiments are conducted using fixed random seeds to ensure reproducibility. Optimization hyper-parameters, training durations, and evaluation settings are held constant across adaptation paradigms wherever applicable. All reported divergence and recoverability results are averaged across three independent random seeds unless otherwise specified. All divergence metrics are computed over full output probability distributions prior to sampling or decoding, ensuring that results reflect distributional equivalence rather than decoding artifacts.
 	
 	For reversible behavioral adaptation, behavioral parameters are initialized independently and attached dynamically at runtime. Rollback is implemented through explicit unloading of behavioral parameters, without modifying the core model state. For weight-based adaptation, rollback attempts do not assume access to the original pretrained checkpoint unless explicitly noted.
 	
