@@ -10,7 +10,7 @@ the Role of Reversible Behavioral Learning.**
 
 - **arXiv Link:** [10.48550/arXiv.2603.02934](https://arxiv.org/abs/2603.02934v1)
 - **Zenodo DOI:** [10.5281/zenodo.18761938](https://doi.org/10.5281/zenodo.18761938)
-- **TMLR Journal Publication:** Coming Soon!
+- **TMLR Journal Publication:** Planned.
 
 > [!NOTE]
 > - **Cite all arXiv versions?** You can cite all versions by using the DOI :  [10.48550/arXiv.2603.02934](https://doi.org/10.48550/arXiv.2603.02934)
