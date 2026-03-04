@@ -8,13 +8,13 @@ accompanying the paper:
 **On the Structural Limitations of Weight-Based Neural Adaptation and
 the Role of Reversible Behavioral Learning.**
 
-- **Zenodo DOI:** [10.5281/zenodo.18761938](https://doi.org/10.5281/zenodo.18761938)
 - **arXiv Link:** [10.48550/arXiv.2603.02934v1](https://arxiv.org/abs/2603.02934v1)
+- **Zenodo DOI:** [10.5281/zenodo.18761938](https://doi.org/10.5281/zenodo.18761938)
 - **TMLR Journal Publication:** Coming Soon!
 
 > [!NOTE]
-> - **Cite all Zenodo versions?** You can cite all versions by using the DOI : [10.5281/zenodo.18738128](https://doi.org/10.5281/zenodo.18738128).
 > - **Cite all arXiv versions?** You can cite all versions by using the DOI :  [10.48550/arXiv.2603.02934](https://doi.org/10.48550/arXiv.2603.02934)
+> - **Cite all Zenodo versions?** You can cite all versions by using the DOI : [10.5281/zenodo.18738128](https://doi.org/10.5281/zenodo.18738128).
 > 
 > This DOI represents all versions and will always resolve to the latest one.
 
