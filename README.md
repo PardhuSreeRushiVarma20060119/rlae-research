@@ -25,7 +25,7 @@ It is provided strictly for reproducibility.
 
 If you use this work, please cite:
 
-```
+```cite
 @article{konduru2026structural,
   title={On the Structural Limitations of Weight-Based Neural Adaptation and the Role of Reversible Behavioral Learning},
   author={Konduru, Pardhu Sri Rushi Varma},
