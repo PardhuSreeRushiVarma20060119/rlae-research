@@ -20,6 +20,21 @@ the Role of Reversible Behavioral Learning.**
 
 It is provided strictly for reproducibility. 
 
+
+## Citation
+
+If you use this work, please cite:
+
+```
+@article{konduru2026structural,
+  title={On the Structural Limitations of Weight-Based Neural Adaptation and the Role of Reversible Behavioral Learning},
+  author={Konduru, Pardhu Sri Rushi Varma},
+  journal={arXiv preprint arXiv:2603.02934},
+  year={2026},
+  doi={10.48550/arXiv.2603.02934}
+}
+```
+
 ------------------------------------------------------------------------
 
 ## Scope
